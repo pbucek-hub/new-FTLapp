@@ -603,7 +603,7 @@
       tableLine = 'Table A · '+band.label+' · '+capLabel+' sector(s)';
     } else {
       const rest = parseFloat(document.getElementById('precedingRest').value||'0');
-      const row = (rest<=18||rest>=30) ? TABLE_B[0] : TABLE_B[1];
+      const row = (rest<=18||rest>30) ? TABLE_B[0] : TABLE_B[1]; // OMA 7.5.8.3: "over 30" read as strictly >30
       const idx = Math.min(Math.max(sectorsInput,1),7)-1;
       tableHours = row.vals[idx];
       capLabel = sectorsInput>=7 ? '7+' : String(sectorsInput);
@@ -678,7 +678,7 @@
     }
 
     let travelExtra = 0;
-    if(awayBase){
+    if(awayBase && accomProvided){ // OMA 7.5.12: travel-time addition only applies "in such circumstances" -- i.e. the accommodation-provided rest-reduction case
       const travelEachWay = parseFloat(document.getElementById('travelMin').value||'0')/60;
       const totalTravel = travelEachWay*2;
       travelExtra = Math.max(0, totalTravel-1);
