@@ -63,7 +63,7 @@ jobs:
 
             // NCC default should render a numeric FDP
             let result = await page.locator('#fdp-result').innerText();
-            if(!/MAXIMUM FDP/i.test(result)) throw new Error('NCC default FDP did not render');
+            if(!/MAX FDP/i.test(result)) throw new Error('NCC default FDP did not render');
 
             // Table B exactly 30:00 must never be silently assigned
             await page.locator('#seg-acclim button[data-val="notacclim"]').click();
@@ -74,7 +74,7 @@ jobs:
             // Moving off the ambiguous boundary should calculate again
             await page.locator('#precedingRest').fill('30.5');
             result = await page.locator('#fdp-result').innerText();
-            if(/REVIEW REQUIRED/i.test(result) || !/MAXIMUM FDP/i.test(result)) throw new Error('Table B >30h did not return to calculation');
+            if(/REVIEW REQUIRED/i.test(result) || !/MAX FDP/i.test(result)) throw new Error('Table B >30h did not return to calculation');
 
             // CAT/AOC UI must switch cleanly and hide NCC-only long-range exception
             await page.locator('#seg-ruleset button[data-val="CAT"]').click();
