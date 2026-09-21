@@ -321,6 +321,21 @@
     .headline-row .num{font-size:26px;}
   }
 
+
+  .result-details{margin-top:12px;border-top:1px solid var(--border-soft);padding-top:8px;}
+  .result-details summary{
+    cursor:pointer;
+    color:#a9c7f7;
+    font-size:12px;
+    font-weight:600;
+    list-style:none;
+    padding:8px 0 4px;
+  }
+  .result-details summary::-webkit-details-marker{display:none;}
+  .result-details summary::after{content:' ▾';color:var(--dim2);}
+  .result-details[open] summary::after{content:' ▴';}
+  .result-details .detail-body{margin-top:4px;}
+  .result > .note{margin-top:10px;}
 </style>
 </head>
 <body>
@@ -1060,6 +1075,25 @@
       (catAdj.notes.length ? '<div class="row"><span class="k">'+catAdj.notes.join(' · ')+'</span><span class="v"></span></div>' : '')+
       (extMethod!=='none' ? '<div class="row"><span class="k">'+extLine+'</span><span class="v"></span></div>' : '')+
       (extMethod==='split' ? '<div class="row"><span class="k">'+splitLine+'</span><span class="v"></span></div>' : '');
+    compactResultDetails(box);
+  }
+
+  function compactResultDetails(box, label='Reason & reference'){
+    if(!box) return;
+    const existing=box.querySelector('.result-details');
+    if(existing) return;
+    const rows=[...box.children].filter(el=>el.classList && el.classList.contains('row'));
+    if(!rows.length) return;
+    const details=document.createElement('details');
+    details.className='result-details';
+    const summary=document.createElement('summary');
+    summary.textContent=label;
+    const body=document.createElement('div');
+    body.className='detail-body';
+    rows.forEach(r=>body.appendChild(r));
+    details.appendChild(summary);
+    details.appendChild(body);
+    box.appendChild(details);
   }
 
   // ================= AIRPORT / TIME ZONE =================
@@ -1189,6 +1223,7 @@
       (reducedApplied ? '<div class="row"><span class="k">−1h reduction (away, accommodation provided, floor '+ACCOM_FLOOR+'h)</span><span class="v">'+hhmm(reduced)+'</span></div>' : '')+
       (travelExtra>0 ? '<div class="row"><span class="k">+ travel time over 1h combined</span><span class="v">+'+hhmm(travelExtra)+'</span></div>' : '')+
       (over20 ? '<div class="row"><span class="k">Duty incl. positioning &gt;'+(ruleSet==='NCC'?20:18)+'h</span><span class="v"><span class="status warn">Local night required</span></span></div>' : '');
+    compactResultDetails(box);
   }
 
   ['picReducedRest','picTransport'].forEach(id=> document.getElementById(id) && document.getElementById(id).addEventListener('input', renderPicDiscretion));
@@ -1264,6 +1299,7 @@
     }
 
     document.getElementById('cumulative-result').innerHTML = rows;
+    compactResultDetails(document.getElementById('cumulative-result'));
   }
 
   // ================= LONG RANGE TAB =================
@@ -1284,6 +1320,7 @@
       '<div class="row"><span class="k">Conditions met</span><span class="v"><span class="status '+(allChecked?'ok':'bad')+'">'+(allChecked?'All 4 confirmed':'Incomplete')+'</span></span></div>'+
       '<div class="row"><span class="k">Duties this type, trailing 28 days (max 4)</span><span class="v"><span class="status '+countSt+'">'+count+'</span></span></div>'+
       '<div class="row"><span class="k">Cumulative duty, trailing 28 days (max 170h)</span><span class="v"><span class="status '+hoursSt+'">'+hours+'h</span></span></div>';
+    compactResultDetails(document.getElementById('longrange-result'));
   }
 
   // ---------- Initial render ----------
