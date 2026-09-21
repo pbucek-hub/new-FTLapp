@@ -186,6 +186,141 @@
   .result.illegal .headline .num,.result.illegal .headline-row .num{color:var(--red)!important;}
   #airportMatches{margin-top:6px;}
   @media (max-width:420px){.grid2{grid-template-columns:1fr;}}
+
+  /* Beta UI refinement — cleaner operational hierarchy */
+  :root{
+    --bg:#0b1017;
+    --panel:#121923;
+    --panel2:#18212d;
+    --border:#273241;
+    --border-soft:#202a37;
+    --text:#f1f5f9;
+    --dim:#9aa7b7;
+    --dim2:#6f7d8d;
+    --amber:#f2b24d;
+    --teal:#66d6c2;
+    --red:#f0645a;
+    --accent:#78a9ff;
+  }
+  body{background:linear-gradient(180deg,#0a0f16 0,#0d131c 48%,#0b1017 100%);}
+  .app{max-width:760px;padding:20px 18px 80px;}
+  header.top{
+    padding:18px 18px 16px;
+    margin:0 -2px 18px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:rgba(18,25,35,.94);
+    box-shadow:0 12px 36px rgba(0,0,0,.18);
+  }
+  header.top .tail{color:var(--dim);font-size:10px;letter-spacing:.1em;}
+  header.top h1{font-size:24px;letter-spacing:-.025em;}
+  header.top .sub{line-height:1.45;}
+  header.top .rev{
+    border-left:0;
+    background:#101722;
+    border:1px solid var(--border-soft);
+    border-radius:9px;
+    padding:9px 11px;
+    color:#c8a76f;
+  }
+  nav.tabs{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(11,16,23,.94);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    padding:10px 0 12px;
+    margin-bottom:20px;
+    border-bottom:0;
+  }
+  nav.tabs button{
+    border:0;
+    background:#141c27;
+    color:#aab5c4;
+    padding:10px 14px;
+    border-radius:10px;
+    transition:transform .12s ease,background .12s ease,color .12s ease;
+  }
+  nav.tabs button:active{transform:scale(.98);}
+  nav.tabs button.active{
+    color:#08101a;
+    background:var(--accent);
+    box-shadow:0 5px 16px rgba(120,169,255,.2);
+  }
+  h2.section-title{font-size:18px;letter-spacing:-.015em;margin-bottom:6px;}
+  p.section-desc{font-size:13px;line-height:1.55;margin-bottom:20px;}
+  .field{margin-bottom:18px;}
+  .field label{font-size:10.5px;letter-spacing:.07em;color:#8e9bad;}
+  .field input[type=text],
+  .field input[type=number],
+  .field input[type=time],
+  .field input[type=date],
+  .field select{
+    background:#151e29;
+    border:1px solid #2a3747;
+    border-radius:11px;
+    min-height:46px;
+    padding:11px 13px;
+    font-size:16px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.015);
+  }
+  .field input:focus,.field select:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(120,169,255,.15);
+  }
+  .seg{gap:7px;}
+  .seg button{
+    min-height:44px;
+    border-radius:10px;
+    background:#151e29;
+    border:1px solid #2a3747;
+    color:#aab5c4;
+    transition:all .12s ease;
+  }
+  .seg button.active{
+    background:#1b2a3d;
+    color:#f7fbff;
+    border-color:var(--accent);
+    box-shadow:inset 0 0 0 1px rgba(120,169,255,.35);
+  }
+  .card,.result,details.helper{
+    border-radius:14px;
+    border-color:#253140;
+    background:#111923;
+    box-shadow:0 8px 28px rgba(0,0,0,.12);
+  }
+  .result{padding:18px 18px 16px;}
+  .headline-row{gap:10px;padding:8px 0 14px;}
+  .headline-row .item{
+    background:#0e1620;
+    border:1px solid var(--border-soft);
+    border-radius:12px;
+    padding:13px 10px;
+  }
+  .headline-row .num{font-size:31px;}
+  .headline-row .num.amber{color:#f3bf69;}
+  .headline-row .num.teal{color:#78cfc0;}
+  details.helper summary{
+    color:#b9d0f7;
+    background:#121b26;
+    padding:13px 14px;
+  }
+  details.helper .inner{background:#101822;}
+  .note{border-radius:10px;background:#101823;}
+  #airportMatches{margin-top:8px;}
+  @media(max-width:520px){
+    .app{padding:14px 12px 70px;}
+    header.top{padding:15px 14px;margin-bottom:14px;border-radius:14px;}
+    header.top h1{font-size:21px;}
+    nav.tabs{margin-left:-2px;margin-right:-2px;}
+    .grid2{grid-template-columns:1fr;}
+    .headline-row{flex-wrap:nowrap;}
+    .headline-row .item{min-width:0;}
+    .headline-row .num{font-size:26px;}
+  }
+
 </style>
 </head>
 <body>
@@ -951,19 +1086,31 @@
     q=(q||'').trim().toLowerCase();
     if(q.length<2){airportMatches.style.display='none';return}
     loadAirports().then(()=>{
-      const exact=[],starts=[],contains=[];
+      // Always scan the full database for an exact ICAO/IATA code first.
+      // The previous early-exit logic could fill up on city/name partial matches
+      // before reaching a later exact four-letter ICAO entry.
+      const exactCode=airports.filter(a=>
+        (a.icao && String(a.icao).toLowerCase()===q) ||
+        (a.iata && String(a.iata).toLowerCase()===q)
+      );
+      if(exactCode.length===1){
+        selectAirport(exactCode[0]);
+        return;
+      }
+
+      const exactText=[],starts=[],contains=[];
       for(const a of airports){
         const vals=[a.icao,a.iata,a.name,a.city].filter(Boolean).map(x=>String(x).toLowerCase());
-        if(vals.some(v=>v===q)) exact.push(a);
+        if(vals.some(v=>v===q)) exactText.push(a);
         else if(vals.some(v=>v.startsWith(q))) starts.push(a);
         else if(vals.some(v=>v.includes(q))) contains.push(a);
-        if(exact.length+starts.length+contains.length>80)break;
+        if(exactText.length+starts.length+contains.length>=120) break;
       }
-      const found=[...exact,...starts,...contains].slice(0,12);
+      const found=[...exactText,...starts,...contains].slice(0,12);
       airportMatches.innerHTML=found.map((a,i)=>'<option value="'+i+'">'+a.icao+' / '+(a.iata||'—')+' — '+a.name+' — '+(a.city||'')+'</option>').join('');
       airportMatches._matches=found;
       airportMatches.style.display=found.length?'':'none';
-      if(exact.length===1){selectAirport(exact[0]);}
+      if(exactText.length===1){selectAirport(exactText[0]);}
     });
   }
   function selectAirport(a){
