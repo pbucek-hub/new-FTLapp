@@ -54,6 +54,16 @@ jobs:
           (async()=>{
             const browser = await chromium.launch({headless:true});
             const page = await browser.newPage({viewport:{width:390,height:844}});
+            await page.route('https://raw.githubusercontent.com/mwgg/Airports/master/airports.json', async route => {
+              await route.fulfill({
+                status:200,
+                contentType:'application/json',
+                body:JSON.stringify({
+                  EGLL:{icao:'EGLL',iata:'LHR',name:'London Heathrow Airport',city:'London',country:'GB',tz:'Europe/London'},
+                  LFPG:{icao:'LFPG',iata:'CDG',name:'Charles de Gaulle Airport',city:'Paris',country:'FR',tz:'Europe/Paris'}
+                })
+              });
+            });
             await page.goto('http://127.0.0.1:8000/index.html', {waitUntil:'networkidle'});
 
             // Basic load and mobile layout
@@ -64,6 +74,13 @@ jobs:
             // NCC default should render a numeric FDP
             let result = await page.locator('#fdp-result').innerText();
             if(!/MAX FDP/i.test(result)) throw new Error('NCC default FDP did not render');
+
+            // Four-letter ICAO lookup must resolve exact codes.
+            await page.locator('#reportLocation').focus();
+            await page.locator('#reportLocation').fill('EGLL');
+            await page.waitForFunction(() => document.querySelector('#reportLocation').value.includes('EGLL'));
+            const airportValue = await page.locator('#reportLocation').inputValue();
+            if(!/EGLL/.test(airportValue)) throw new Error('ICAO lookup failed for EGLL');
 
             // Table B exactly 30:00 must never be silently assigned
             await page.locator('#seg-acclim button[data-val="notacclim"]').click();
