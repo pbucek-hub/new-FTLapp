@@ -239,7 +239,7 @@ for(const rule of ['NCC','CAT']){
           document.querySelector('[data-tab="cumulative"]').click();
           const e=document.getElementById(id);e.value=String(value);e.dispatchEvent(new Event('input',{bubbles:true}));
         },{id,value});
-        const text=await page.locator('#cumulative-result').innerText();
+        const text=await page.locator('#cumulative-result').textContent();
         const shouldBad=value>=limit;
         const row=text.split('\n').findIndex(x=>x.includes(String(limit)+'h'));
         if(row<0) throw new Error('limit row not rendered');
