@@ -261,10 +261,17 @@ for(const delayH of [3.99,4,4.01,9.99,10]){
       const a=document.getElementById('delayedActual');a.value=String(Math.floor(mins/60)).padStart(2,'0')+':'+String(mins%60).padStart(2,'0');a.dispatchEvent(new Event('input',{bubbles:true}));
       const d=document.getElementById('delayUndisturbed');d.checked=delayH>=10;d.dispatchEvent(new Event('change',{bubbles:true}));
     },{delayH});
-    const txt=await fdpText();
-    if(delayH<4 && !/Delayed report <4h/.test(txt)) throw new Error('expected <4h delayed-report rule');
-    if(delayH>=4&&delayH<10 && !/Delayed report ≥4h/.test(txt)) throw new Error('expected ≥4h delayed-report rule');
-    if(delayH>=10 && !/qualifies as rest/.test(txt)) throw new Error('expected ≥10h rest treatment');
+    // The UI deliberately hides detailed rule notes. Validate the dedicated
+    // delayed-report state text plus the resulting FDP instead of visible prose.
+    const stateText=await page.locator('#delayedReportResult').textContent();
+    const got=await maxFdp();
+    if(got===null) throw new Error('delayed-report calculation did not produce an FDP');
+    if(delayH<4 && !/limit from original report; actual FDP starts at actual report/i.test(stateText))
+      throw new Error('expected <4h delayed-report rule state');
+    if(delayH>=4&&delayH<10 && !/use more limiting report band; FDP start is 4h after original report/i.test(stateText))
+      throw new Error('expected ≥4h delayed-report rule state');
+    if(delayH>=10 && !/treated as rest; actual report becomes the new FDP start/i.test(stateText))
+      throw new Error('expected ≥10h rest treatment');
   });
 }
 for(const standbyH of [5.99,6,6.01,11.99,12,12.01]){
