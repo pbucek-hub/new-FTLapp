@@ -120,3 +120,10 @@ jobs:
             console.log('Browser smoke and boundary tests passed');
           })().catch(e=>{ console.error(e); process.exit(1); });
           NODE
+
+      - name: Comprehensive OM-A rule matrix
+        run: |
+          python3 -m http.server 8000 >/tmp/ftl-matrix-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          node tests/rule-matrix.mjs
