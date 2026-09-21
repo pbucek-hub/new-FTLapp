@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FTL Calculator — Part-NCC OMA 7.5</title>
+<title>JCC FTL Calculator — NCC & CAT/AOC</title>
 <style>
   :root{
     --bg:#0E1116;
@@ -189,11 +189,20 @@
 <div class="app">
 
   <header class="top">
-    <div class="tail">Jet Concierge Club · Part-NCC OMA · Section 7.5</div>
+    <div class="tail">Jet Concierge Club · Flight Time Limitations</div>
     <h1>Flight Time Limitation Calculator</h1>
-    <div class="sub">Built from <strong>2026_JCC_PART_NCC_OMA_I2R19</strong> (Issue 2, Rev 19 — 29 June 2026). Private/Part-NCC two-pilot operations.</div>
+    <div class="sub" id="ruleset-sub">NCC — <strong>2026_JCC_PART_NCC_OMA_I2R19</strong> (Issue 2, Rev 19 — 29 June 2026).</div>
     <div class="rev">Planning aid only — not a substitute for the OMA itself, Centrik FTL reporting, or NPFO/SM approval. Confirm this is the revision current for your aircraft before relying on it operationally.</div>
   </header>
+
+  <div class="field">
+    <label>Rule set</label>
+    <div class="seg" id="seg-ruleset">
+      <button data-val="NCC" class="active">NCC</button>
+      <button data-val="CAT">CAT / AOC</button>
+    </div>
+    <div class="hint" id="ruleset-hint">Part-NCC OMA Section 7.5</div>
+  </div>
 
   <nav class="tabs" id="tabs">
     <button data-tab="fdp" class="active">Max FDP</button>
@@ -234,20 +243,17 @@
       <div class="hint" id="hint-sectors">Table A caps at "8 or more."</div>
     </div>
 
-    <details class="helper">
-      <summary>Got a sector longer than 9h01? (two-pilot long-range adjustment — OMA 7.5.9)</summary>
+    <details class="helper" id="longrange-helper">
+      <summary id="longrange-summary">Long-sector adjustment — OMA 7.5.9</summary>
       <div class="inner">
-        <p class="section-desc" style="margin-bottom:12px;">Only relevant with a bare two-pilot crew and no relief pilot carried. A long sector is treated as more than one sector for the table lookup above.</p>
+        <p class="section-desc" id="longrange-desc" style="margin-bottom:12px;">Enter the scheduled duration of the longest sector. The app applies the correct modified-sector rule automatically.</p>
         <div class="field">
           <label>Longest scheduled sector</label>
-          <div class="seg" id="seg-longsector">
-            <button data-val="none" class="active">9h00 or less</button>
-            <button data-val="mid">9h01 – 11h00</button>
-            <button data-val="long">Over 11h00</button>
-          </div>
+          <input type="time" id="longSectorTime" value="06:00" step="60">
+          <div class="hint" id="longSectorHint">NCC long-sector penalty begins at 09:01.</div>
         </div>
         <div id="longsector-result"></div>
-        <div class="note">If an additional, current, type-rated pilot is carried, this adjustment doesn't apply — use the actual sector count directly in the table above instead.</div>
+        <div class="note">If an additional, current, type-rated pilot is carried, the long-sector modified-sector limits do not apply; use the actual sectors planned under the applicable FDP table.</div>
       </div>
     </details>
 
@@ -271,7 +277,7 @@
           <input type="time" id="splitEnd" value="19:00">
         </div>
       </div>
-      <div class="hint">Rest is worked out automatically as the gap between these two times. Enter the actual start/end of the usable rest window — if you want to exclude time for immediate pre/post-flight duties, adjust the times yourself before entering them.</div>
+      <div class="hint" id="splitHint">Rest is worked out automatically as the gap between these two times. NCC qualifying rest excludes at least 20 minutes of immediate post/pre-flight duties; CAT/AOC excludes at least 30 minutes.</div>
     </div>
 
     <div id="ext-relief" style="display:none;">
@@ -483,7 +489,7 @@
   </section>
 
   <footer class="foot">
-    Source: 2026_JCC_PART_NCC_OMA_I2R19, Issue 2 / Rev 19, 29 June 2026, Section 7.5 (Flight Time Limitation System), referencing GAR 91.1215 and GAR 125.1205. Prior edition referenced: I1R11, 20 July 2021. Check with your ops team that this remains the current revision before relying on it operationally.
+    Sources: JCC Part-NCC OMA Section 7.5 (2026 I2R19) and JCC CAT/AOC OMA Section 7. Check with Flight Operations that the applicable manual revision remains current before operational use.
   </footer>
 
 </div>
@@ -533,9 +539,34 @@
     {label:'2200–0559', test:m=>m>=1320||m<360, vals:[13,12.25,11.5,11,11,11,11,11]},
   ];
   const TABLE_B = [
-    {label:'Preceding rest ≤18h or ≥30h', vals:[15,14.25,13.5,12.75,12,11.25,11]},
+    {label:'Preceding rest ≤18h or >30h', vals:[15,14.25,13.5,12.75,12,11.25,11]},
     {label:'Preceding rest 18h–30h',       vals:[13.5,13,12.5,11.75,11,11,11]},
   ];
+  const CAT_TABLE_A = [
+    {label:'0600–0659', test:m=>m>=360&&m<=419, vals:[13,12.25,11.5,10.75,10,9.5,9,9]},
+    {label:'0700–1259', test:m=>m>=420&&m<=779, vals:[14,13.25,12.5,11.75,11,10.5,10,9.5]},
+    {label:'1300–1759', test:m=>m>=780&&m<=1079, vals:[13,12.25,11.5,10.75,10,9.5,9,9]},
+    {label:'1800–2159', test:m=>m>=1080&&m<=1319, vals:[12,11.25,10.5,9.75,9,9,9,9]},
+    {label:'2200–0559', test:m=>m>=1320||m<360, vals:[11,10.25,9.5,9,9,9,9,9]},
+  ];
+  const CAT_TABLE_B = [
+    {label:'Preceding rest ≤18h or >30h', vals:[13,12.25,11.5,10.75,10,9.25,9]},
+    {label:'Preceding rest 18h–30h',       vals:[11.5,11,10.5,9.75,9,9,9]},
+  ];
+
+  let ruleSet = 'NCC';
+  seg('seg-ruleset', v=>{
+    ruleSet=v;
+    document.getElementById('ruleset-sub').innerHTML = v==='NCC'
+      ? 'NCC — <strong>2026_JCC_PART_NCC_OMA_I2R19</strong> (Issue 2, Rev 19 — 29 June 2026).'
+      : 'CAT/AOC — <strong>JCC OMA Section 7</strong> (CAT flight time limitations).';
+    document.getElementById('ruleset-hint').textContent = v==='NCC' ? 'Part-NCC OMA Section 7.5' : 'CAT/AOC OMA Section 7';
+    document.getElementById('longrange-summary').textContent = v==='NCC' ? 'Long-sector adjustment — OMA 7.5.9' : 'Long-sector adjustment — OMA 7.15';
+    document.getElementById('longSectorHint').textContent = v==='NCC' ? 'NCC long-sector penalty begins at 09:01.' : 'CAT/AOC long-sector penalty begins above 07:00.';
+    document.getElementById('hint-sectors').textContent = acclimState==='acclim' ? 'Table A caps at "8 or more."' : 'Table B caps at "7 or more."';
+    document.getElementById('splitHint').textContent = v==='NCC' ? 'NCC: qualifying split rest excludes at least 20 minutes of immediate post/pre-flight duties.' : 'CAT/AOC: qualifying split rest excludes at least 30 minutes of immediate post/pre-flight duties.';
+    renderFDP(); renderRest(); renderCumulative();
+  });
 
   let acclimState = 'acclim';
   seg('seg-acclim', v=>{
@@ -558,20 +589,7 @@
   let reliefType = 'bunk';
   seg('seg-relieftype', v=>{ reliefType=v; renderFDP(); });
 
-  let longSector = 'none';
-  seg('seg-longsector', v=>{
-    longSector = v;
-    const box = document.getElementById('longsector-result');
-    if(v==='none'){ box.innerHTML=''; renderFDP(); return; }
-    const acc = acclimState==='acclim';
-    let modSectors;
-    if(v==='mid') modSectors = acc ? 1 : 2;
-    if(v==='long') modSectors = acc ? 2 : 3; // 2026 rev: no longer "Not Applicable"
-    box.innerHTML = '<div class="note"><strong>Modified sector count to use above: '+modSectors+'</strong><br>Set the "Number of sectors" field to this value, then read the FDP off the table.</div>';
-    renderFDP();
-  });
-
-  ['startTime','precedingRest','sectors','splitStart','splitEnd','reliefRest'].forEach(id=>{
+  ['startTime','precedingRest','sectors','splitStart','splitEnd','reliefRest','longSectorTime'].forEach(id=>{
     document.getElementById(id).addEventListener('input', renderFDP);
   });
 
@@ -581,25 +599,51 @@
     return (hh||0)*60+(mm||0);
   }
 
+  function longSectorHours(){
+    const t=document.getElementById('longSectorTime').value||'00:00';
+    const [h,m]=t.split(':').map(Number); return (h||0)+(m||0)/60;
+  }
+  function modifiedSectorCount(actual){
+    const h=longSectorHours(), acc=acclimState==='acclim';
+    let mod=actual, text='';
+    if(ruleSet==='NCC'){
+      if(h<=9){ text='No long-sector penalty.'; }
+      else if(h<=11){ mod=actual-1+(acc?1:2); text='09:01–11:00 → modified as '+(acc?'1':'2')+' sector(s).'; }
+      else { mod=actual-1+(acc?2:3); text='>11:00 → modified as '+(acc?'2':'3')+' sector(s).'; }
+    } else {
+      if(h<=7){ text='No long-sector penalty.'; }
+      else if(h<=9){ mod=actual-1+(acc?2:4); text='>07:00–09:00 → modified as '+(acc?'2':'4')+' sector(s).'; }
+      else if(h<=11){ mod=actual-1+(acc?3:4); text='>09:00–11:00 → modified as '+(acc?'3':'4')+' sector(s).'; }
+      else if(acc){ mod=actual-1+4; text='>11:00 → modified as 4 sectors.'; }
+      else { return {notApplicable:true, sectors:actual, text:'>11:00 is not applicable for a two-pilot non-acclimatised CAT/AOC crew.'}; }
+    }
+    return {notApplicable:false,sectors:mod,text};
+  }
+
   function renderFDP(){
     const sectorsInput = parseInt(document.getElementById('sectors').value||'1',10);
+    const longInfo = modifiedSectorCount(sectorsInput);
+    const lookupSectors = longInfo.sectors;
+    document.getElementById('longsector-result').innerHTML = '<div class="note">'+longInfo.text+(lookupSectors!==sectorsInput && !longInfo.notApplicable ? '<br><strong>Table lookup sectors: '+lookupSectors+'</strong>' : '')+'</div>';
     let tableLine='', tableHours=0, capLabel='';
 
     if(acclimState==='acclim'){
       const [hh,mm] = document.getElementById('startTime').value.split(':').map(Number);
       const minutes = (hh||0)*60+(mm||0);
-      const band = TABLE_A.find(b=>b.test(minutes)) || TABLE_A[4];
-      const idx = Math.min(Math.max(sectorsInput,1),8)-1;
+      const table = ruleSet==='NCC' ? TABLE_A : CAT_TABLE_A;
+      const band = table.find(b=>b.test(minutes)) || table[4];
+      const idx = Math.min(Math.max(lookupSectors,1),8)-1;
       tableHours = band.vals[idx];
-      capLabel = sectorsInput>=8 ? '8+' : String(sectorsInput);
-      tableLine = 'Table A · '+band.label+' · '+capLabel+' sector(s)';
+      capLabel = lookupSectors>=8 ? '8+' : String(lookupSectors);
+      tableLine = (ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table A · '+band.label+' · '+capLabel+' sector(s)';
     } else {
       const rest = parseFloat(document.getElementById('precedingRest').value||'0');
-      const row = (rest<=18||rest>=30) ? TABLE_B[0] : TABLE_B[1];
-      const idx = Math.min(Math.max(sectorsInput,1),7)-1;
+      const table = ruleSet==='NCC' ? TABLE_B : CAT_TABLE_B;
+      const row = (rest<=18||rest>30) ? table[0] : table[1];
+      const idx = Math.min(Math.max(lookupSectors,1),7)-1;
       tableHours = row.vals[idx];
-      capLabel = sectorsInput>=7 ? '7+' : String(sectorsInput);
-      tableLine = 'Table B · '+row.label+' · '+capLabel+' sector(s)';
+      capLabel = lookupSectors>=7 ? '7+' : String(lookupSectors);
+      tableLine = (ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · '+row.label+' · '+capLabel+' sector(s)';
     }
 
     let ext = 0, extLine = '', capNote = '', splitLine = '';
@@ -616,14 +660,18 @@
     } else if(extMethod==='relief'){
       const r = parseFloat(document.getElementById('reliefRest').value||'0');
       if(r<3){ ext=0; extLine='In-flight rest <3h → no extension'; }
-      else if(reliefType==='bunk'){ ext=r/2; capNote='cap: FDP ≤ 20:00'; extLine='Bunk rest · '+r+'h → +'+hhmm(ext)+' ('+capNote+')'; }
-      else { ext=r/3; capNote='cap: FDP ≤ 18:00'; extLine='Seat rest · '+r+'h → +'+hhmm(ext)+' ('+capNote+')'; }
+      else if(reliefType==='bunk'){ const cap=ruleSet==='NCC'?20:18; ext=r/2; capNote='cap: FDP ≤ '+hhmm(cap); extLine='Bunk rest · '+r+'h → +'+hhmm(ext)+' ('+capNote+')'; }
+      else { const cap=ruleSet==='NCC'?18:15; ext=r/3; capNote='cap: FDP ≤ '+hhmm(cap); extLine='Seat rest · '+r+'h → +'+hhmm(ext)+' ('+capNote+')'; }
     }
 
+    if(longInfo.notApplicable){
+      document.getElementById('fdp-result').innerHTML='<div class="headline"><div class="num" style="color:var(--red)">NOT APPLICABLE</div><div class="lbl">CAT/AOC TWO-PILOT NON-ACCLIMATISED LONG-SECTOR LIMIT</div></div><div class="note warn">'+longInfo.text+'</div>';
+      return;
+    }
     let total = tableHours + ext;
     let capped = false;
     if(extMethod==='relief'){
-      const cap = reliefType==='bunk' ? 20 : 18;
+      const cap = reliefType==='bunk' ? (ruleSet==='NCC'?20:18) : (ruleSet==='NCC'?18:15);
       if(total>cap){ total=cap; capped=true; }
     }
 
@@ -657,12 +705,13 @@
 
   function renderRest(){
     const duty = parseFloat(document.getElementById('precedingDuty').value||'0');
-    let base = Math.max(duty,10);
+    const REST_BASE = ruleSet==='NCC'?10:12;
+    let base = Math.max(duty,REST_BASE);
     let reduced = base;
-    const ACCOM_FLOOR = 8; // 2026 rev: was 9
+    const ACCOM_FLOOR = ruleSet==='NCC'?8:10;
 
     let reducedApplied = false;
-    if(awayBase && accomProvided && base>=10){
+    if(awayBase && accomProvided && ((ruleSet==='NCC' && base>=10) || (ruleSet==='CAT' && Math.abs(base-12)<1e-9))){
       reduced = Math.max(base-1, ACCOM_FLOOR);
       reducedApplied = true;
     }
@@ -679,7 +728,7 @@
     const box = document.getElementById('rest-result');
     box.innerHTML =
       '<div class="headline"><div class="num">'+hhmm(finalRest)+'</div><div class="lbl">MINIMUM REST REQUIRED</div></div>'+
-      '<div class="row"><span class="k">Base (max of preceding duty, or 10h)</span><span class="v">'+hhmm(base)+'</span></div>'+
+      '<div class="row"><span class="k">Base (max of preceding duty, or '+REST_BASE+'h)</span><span class="v">'+hhmm(base)+'</span></div>'+
       (reducedApplied ? '<div class="row"><span class="k">−1h reduction (away, accommodation provided, floor '+ACCOM_FLOOR+'h)</span><span class="v">'+hhmm(reduced)+'</span></div>' : '')+
       (travelExtra>0 ? '<div class="row"><span class="k">+ travel time over 1h combined</span><span class="v">+'+hhmm(travelExtra)+'</span></div>' : '')+
       (over20 ? '<div class="row"><span class="k">Duty incl. positioning &gt;20h</span><span class="v"><span class="status warn">Local night required</span></span></div>' : '');
@@ -701,7 +750,8 @@
   }
 
   // ================= CUMULATIVE TAB =================
-  const LIMITS = {d7:65, d14:105, d28:190, d365:2000, f28:100, f365:900};
+  const LIMITS_NCC = {d7:65, d14:105, d28:190, d365:2000, f28:100, f365:900};
+  const LIMITS_CAT = {d7:55, d14:95, d28:190, d365:2000, f28:100, f365:900};
   let consecOffOk = true;
   seg('seg-consecoff', v=>{ consecOffOk = v==='yes'; renderCumulative(); });
   ['d7','d14','d28','d365','f28','f365','consecDuty','daysOff28','daysOff84'].forEach(id=>{
@@ -729,13 +779,14 @@
       return '<div class="row"><span class="k">'+label+'</span><span class="v"><span class="status '+st+'">'+msg+'</span></span></div>';
     }
 
+    const L = ruleSet==='NCC'?LIMITS_NCC:LIMITS_CAT;
     let rows = '';
-    rows += line('Duty · 65h / 7 days', vals.d7, 65, 'h');
-    rows += line('Duty · 105h / 14 days', vals.d14, 105, 'h');
-    rows += line('Duty · 190h / 28 days', vals.d28, 190, 'h');
-    rows += line('Duty · 2000h / 12 months', vals.d365, 2000, 'h');
-    rows += line('Flight time · 100h / 28 days', vals.f28, 100, 'h');
-    rows += line('Flight time · 900h / 12 months', vals.f365, 900, 'h');
+    rows += line('Duty · '+L.d7+'h / 7 days', vals.d7, L.d7, 'h');
+    rows += line('Duty · '+L.d14+'h / 14 days', vals.d14, L.d14, 'h');
+    rows += line('Duty · '+L.d28+'h / 28 days', vals.d28, L.d28, 'h');
+    rows += line('Duty · '+L.d365+'h / 12 months', vals.d365, L.d365, 'h');
+    rows += line('Flight time · '+L.f28+'h / 28 days', vals.f28, L.f28, 'h');
+    rows += line('Flight time · '+L.f365+'h / 12 months', vals.f365, L.f365, 'h');
 
     const consecSt = consecDuty>=7 ? 'bad' : (consecDuty>=6?'warn':'ok');
     rows += '<div class="row"><span class="k">Consecutive duty days (max 7, may position on day 8)</span><span class="v"><span class="status '+consecSt+'">'+consecDuty+' day(s)'+(consecDuty>=7?' — day off due':'')+'</span></span></div>';
@@ -747,7 +798,7 @@
     rows += '<div class="row"><span class="k">Days off, trailing 84 days (avg 8/28d → min 24)</span><span class="v"><span class="status '+off84St+'">'+daysOff84+'</span></span></div>';
 
     const consecOffSt = consecOffOk ? 'ok' : 'bad';
-    rows += '<div class="row"><span class="k">2 consecutive days off within last 16 days</span><span class="v"><span class="status '+consecOffSt+'">'+(consecOffOk?'Yes':'Overdue')+'</span></span></div>';
+    rows += '<div class="row"><span class="k">2 consecutive days off within last '+(ruleSet==='NCC'?16:14)+' days</span><span class="v"><span class="status '+consecOffSt+'">'+(consecOffOk?'Yes':'Overdue')+'</span></span></div>';
 
     document.getElementById('cumulative-result').innerHTML = rows;
   }
