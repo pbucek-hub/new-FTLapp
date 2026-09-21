@@ -74,14 +74,15 @@ await check('Table B exact 30 review',async()=>{
 });
 
 await check('actual FDP illegal state',async()=>{
-  await p.locator('#seg-acclim button[data-val="acclim"]').click();
-  const override=p.locator('#panel-fdp details.helper').first();
-  if(!(await override.getAttribute('open'))) await override.locator('summary').click();
-  await p.locator('#actualReport').fill('09:00');
-  await p.locator('#actualFinish').fill('23:59');
-  const txt=await p.locator('#fdp-result').textContent();
-  if(!/NOT LEGAL/.test(txt)) throw new Error('over-limit actual FDP not clearly illegal');
-  if(!(await p.locator('#fdp-result').evaluate(el=>el.classList.contains('illegal')))) throw new Error('illegal visual state missing');
+  const q=await newPage({width:390,height:844});
+  const override=q.locator('#panel-fdp details.helper').first();
+  if(await override.getAttribute('open')===null) await override.locator('summary').click();
+  await q.locator('#actualReport').fill('09:00');
+  await q.locator('#actualFinish').fill('23:59');
+  const txt=await q.locator('#fdp-result').textContent();
+  if(!/NOT LEGAL/.test(txt)) throw new Error('over-limit actual FDP not clearly illegal: '+txt.replace(/\s+/g,' ').trim().slice(0,220));
+  if(!(await q.locator('#fdp-result').evaluate(el=>el.classList.contains('illegal')))) throw new Error('illegal visual state missing');
+  await q.close();
 });
 
 await check('bottom nav does not cover calculate button',async()=>{
