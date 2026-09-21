@@ -1,0 +1,37 @@
+name: Validate FTL app
+on:
+  push:
+    branches: [feature/ncc-cat-aoc]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check embedded JavaScript syntax
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const html=fs.readFileSync('index.html','utf8');
+          const scripts=[...html.matchAll(/<script[^>]*>([\s\S]*?)<\/script>/gi)].map(m=>m[1]);
+          if(!scripts.length) throw new Error('No script found');
+          scripts.forEach((s,i)=>{ try { new Function(s); } catch(e){ console.error('Script '+i+' syntax error'); throw e; } });
+          console.log('Embedded JavaScript syntax OK');
+          NODE
+      - name: Check required controls and rules
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const h=fs.readFileSync('index.html','utf8');
+          const required=[
+            'seg-ruleset','CAT / AOC','longSectorTime','additionalPilot',
+            'data-val="jump"','data-val="seat"','data-val="bunk"',
+            'actualReport','actualFinish','reportLocation',
+            'CAT_TABLE_A','CAT_TABLE_B','Long-sector penalty removed',
+            'NOT LEGAL'
+          ];
+          for(const x of required){ if(!h.includes(x)) throw new Error('Missing '+x); }
+          console.log('Required dual-rules controls present');
+          NODE
