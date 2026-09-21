@@ -365,7 +365,7 @@
     </div>
 
     <div class="field">
-      <label>Did the preceding duty (incl. any positioning) exceed 20 hours?</label>
+      <label id="longDutyRestLabel">Did the preceding duty (incl. any positioning) exceed 20 hours?</label>
       <div class="seg" id="seg-over20">
         <button data-val="no" class="active">No</button>
         <button data-val="yes">Yes</button>
@@ -596,7 +596,8 @@
     document.getElementById('longSectorHint').textContent = v==='NCC' ? 'NCC long-sector penalty begins at 09:01.' : 'CAT/AOC long-sector penalty begins above 07:00.';
     document.getElementById('hint-sectors').textContent = acclimState==='acclim' ? 'Table A caps at "8 or more."' : 'Table B caps at "7 or more."';
     document.getElementById('splitHint').textContent = v==='NCC' ? 'NCC: qualifying split rest excludes at least 20 minutes of immediate post/pre-flight duties.' : 'CAT/AOC: qualifying split rest excludes at least 30 minutes of immediate post/pre-flight duties.';
-    renderFDP(); renderRest(); renderCumulative();
+    document.getElementById('longDutyRestLabel').textContent = 'Did the preceding duty (incl. any positioning) exceed '+(v==='NCC'?'20':'18')+' hours?';
+    renderFDP(); renderRest(); renderPicDiscretion(); renderCumulative();
   });
 
   let acclimState = 'acclim';
@@ -665,8 +666,9 @@
     document.getElementById('longsector-result').innerHTML = '<div class="note">'+longInfo.text+(lookupSectors!==sectorsInput && !longInfo.notApplicable ? '<br><strong>Table lookup sectors: '+lookupSectors+'</strong>' : '')+'</div>';
     let tableLine='', tableHours=0, capLabel='';
 
+    const effectiveReport = document.getElementById('actualReport').value || document.getElementById('startTime').value;
     if(acclimState==='acclim'){
-      const [hh,mm] = document.getElementById('startTime').value.split(':').map(Number);
+      const [hh,mm] = effectiveReport.split(':').map(Number);
       const minutes = (hh||0)*60+(mm||0);
       const table = ruleSet==='NCC' ? TABLE_A : CAT_TABLE_A;
       const band = table.find(b=>b.test(minutes)) || table[4];
@@ -717,12 +719,12 @@
     }
 
     if(selectedAirport){
-      const reportUtc=zonedLocalToUtc(document.getElementById('reportDate').value,document.getElementById('startTime').value,selectedAirport.tz);
+      const reportUtc=zonedLocalToUtc(document.getElementById('reportDate').value,effectiveReport,selectedAirport.tz);
       if(reportUtc){utcReportLabel=formatUTC(reportUtc);utcEndLabel=formatUTC(new Date(reportUtc.getTime()+total*3600000));}
     } else {utcReportLabel='';utcEndLabel='';}
 
     // Latest blocks-on (local) — start time + total FDP, wrapping past midnight
-    const startMinutes = timeToMinutes(document.getElementById('startTime').value);
+    const startMinutes = timeToMinutes(effectiveReport);
     let blocksMinutesRaw = startMinutes + total*60;
     const dayOffset = Math.floor(blocksMinutesRaw/1440);
     const blocksMinutes = ((blocksMinutesRaw%1440)+1440)%1440;
@@ -878,21 +880,22 @@
       '<div class="row"><span class="k">Base (max of preceding duty, or '+REST_BASE+'h)</span><span class="v">'+hhmm(base)+'</span></div>'+
       (reducedApplied ? '<div class="row"><span class="k">−1h reduction (away, accommodation provided, floor '+ACCOM_FLOOR+'h)</span><span class="v">'+hhmm(reduced)+'</span></div>' : '')+
       (travelExtra>0 ? '<div class="row"><span class="k">+ travel time over 1h combined</span><span class="v">+'+hhmm(travelExtra)+'</span></div>' : '')+
-      (over20 ? '<div class="row"><span class="k">Duty incl. positioning &gt;20h</span><span class="v"><span class="status warn">Local night required</span></span></div>' : '');
+      (over20 ? '<div class="row"><span class="k">Duty incl. positioning &gt;'+(ruleSet==='NCC'?20:18)+'h</span><span class="v"><span class="status warn">Local night required</span></span></div>' : '');
   }
 
   ['picReducedRest','picTransport'].forEach(id=> document.getElementById(id) && document.getElementById(id).addEventListener('input', renderPicDiscretion));
   function renderPicDiscretion(){
     const proposed = parseFloat(document.getElementById('picReducedRest').value||'0');
     const transport = parseFloat(document.getElementById('picTransport').value||'0');
-    const floor = 8 + transport;
+    const accommodationFloor = ruleSet==='NCC'?8:10;
+    const floor = accommodationFloor + transport;
     const ok = proposed >= floor;
     const box = document.getElementById('pic-discretion-result');
     box.innerHTML =
       '<div class="result" style="margin-top:0;">'+
-      '<div class="row"><span class="k">Floor (8h accommodation + transport time)</span><span class="v">'+hhmm(floor)+'</span></div>'+
+      '<div class="row"><span class="k">Floor ('+accommodationFloor+'h accommodation + transport time)</span><span class="v">'+hhmm(floor)+'</span></div>'+
       '<div class="row"><span class="k">Proposed rest</span><span class="v">'+hhmm(proposed)+'</span></div>'+
-      '<div class="row"><span class="k">Status</span><span class="v"><span class="status '+(ok?'ok':'bad')+'">'+(ok?'Permitted if risk-assessed & documented':'Below the absolute floor — not permitted')+'</span></span></div>'+
+      '<div class="row"><span class="k">Status</span><span class="v"><span class="status '+(ok?'ok':'bad')+'">'+(ok?(ruleSet==='NCC'?'Permitted if risk-assessed & documented':'Meets accommodation floor — CAT reduced-rest restrictions still apply'):'Below the absolute floor — not permitted')+'</span></span></div>'+
       '</div>';
   }
 
