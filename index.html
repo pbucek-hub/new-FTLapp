@@ -182,6 +182,9 @@
   .btn.ghost{background:none;border:1px solid var(--border);color:var(--dim);font-weight:500;}
 
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .result.illegal{border-color:var(--red);}
+  .result.illegal .headline .num,.result.illegal .headline-row .num{color:var(--red)!important;}
+  #airportMatches{margin-top:6px;}
   @media (max-width:420px){.grid2{grid-template-columns:1fr;}}
 </style>
 </head>
@@ -227,9 +230,30 @@
 
     <div class="field" id="field-starttime">
       <label>Local time of report / FDP start</label>
-      <input type="time" id="startTime" value="09:00">
-      <div class="hint">Used for the Table A start-time band (if acclimatised) and to work out the latest blocks-on time below either way.</div>
+      <div class="grid2">
+        <input type="time" id="startTime" value="09:00">
+        <input type="date" id="reportDate">
+      </div>
+      <div class="hint">Used for the applicable start-time band.</div>
     </div>
+
+    <div class="field">
+      <label>Report location — ICAO, IATA, airport or city</label>
+      <input type="text" id="reportLocation" placeholder="e.g. EGLL, LHR, Heathrow, London" autocomplete="off">
+      <select id="airportMatches" style="display:none;width:100%;"></select>
+      <div class="hint" id="airportStatus">Airport database loads when you start typing.</div>
+    </div>
+
+    <details class="helper">
+      <summary>Actual report / finish override</summary>
+      <div class="inner">
+        <div class="grid2">
+          <div class="field"><label>Actual report time</label><input type="time" id="actualReport"></div>
+          <div class="field"><label>Actual finish time</label><input type="time" id="actualFinish"></div>
+        </div>
+        <div class="hint">If both are entered, the app compares the actual FDP with the applicable maximum. Finish times earlier than report are treated as the following day.</div>
+      </div>
+    </details>
 
     <div class="field" id="field-precedingrest" style="display:none;">
       <label>Length of preceding rest (hours)</label>
@@ -284,12 +308,19 @@
       <div class="field">
         <label>Rest taken in</label>
         <div class="seg" id="seg-relieftype">
-          <button data-val="bunk" class="active">Bunk</button>
-          <button data-val="seat">Seat</button>
+          <button data-val="jump" class="active">Jump seat</button>
+          <button data-val="seat">Reclining seat</button>
+          <button data-val="bunk">Bunk</button>
         </div>
       </div>
       <div class="field">
-        <label>Total in-flight rest (need not be consecutive)</label>
+        <label style="text-transform:none;letter-spacing:0;color:var(--text);">
+          <input type="checkbox" id="additionalPilot"> Additional current type-rated pilot carried
+        </label>
+        <div class="hint">When confirmed, the long-sector modified-sector penalty is removed and the actual sectors planned are used. Jump seat gives no in-flight-rest credit.</div>
+      </div>
+      <div class="field" id="reliefRestField" style="display:none;">
+        <label>Total qualifying in-flight rest (need not be consecutive)</label>
         <input type="number" id="reliefRest" value="4" min="0" step="0.5">
       </div>
     </div>
@@ -586,12 +617,15 @@
     renderFDP();
   });
 
-  let reliefType = 'bunk';
-  seg('seg-relieftype', v=>{ reliefType=v; renderFDP(); });
+  let reliefType = 'jump';
+  seg('seg-relieftype', v=>{ reliefType=v; document.getElementById('reliefRestField').style.display=v==='jump'?'none':''; renderFDP(); });
 
-  ['startTime','precedingRest','sectors','splitStart','splitEnd','reliefRest','longSectorTime'].forEach(id=>{
+  ['startTime','reportDate','precedingRest','sectors','splitStart','splitEnd','reliefRest','longSectorTime','actualReport','actualFinish'].forEach(id=>{
     document.getElementById(id).addEventListener('input', renderFDP);
   });
+  document.getElementById('additionalPilot').addEventListener('change',renderFDP);
+
+  document.getElementById('reportDate').value = new Date().toISOString().slice(0,10);
 
   function timeToMinutes(t){
     if(!t) return 0;
@@ -605,7 +639,11 @@
   }
   function modifiedSectorCount(actual){
     const h=longSectorHours(), acc=acclimState==='acclim';
+    const extraPilot=document.getElementById('additionalPilot').checked;
     let mod=actual, text='';
+    if(extraPilot && h>(ruleSet==='NCC'?9:7)){
+      return {notApplicable:false,sectors:actual,text:'Long-sector penalty removed — additional current type-rated pilot carried; use actual sectors planned.'};
+    }
     if(ruleSet==='NCC'){
       if(h<=9){ text='No long-sector penalty.'; }
       else if(h<=11){ mod=actual-1+(acc?1:2); text='09:01–11:00 → modified as '+(acc?'1':'2')+' sector(s).'; }
@@ -658,10 +696,13 @@
       else if(r<=10){ ext=r/2; extLine='Split duty · '+hhmm(r)+' rest → +'+hhmm(ext); }
       else { ext=5; extLine='Split duty rest >10h is outside the 3–10h table — treat as the 10h max (+5:00) or confirm with ops.'; }
     } else if(extMethod==='relief'){
+      const pilotOK=document.getElementById('additionalPilot').checked;
       const r = parseFloat(document.getElementById('reliefRest').value||'0');
-      if(r<3){ ext=0; extLine='In-flight rest <3h → no extension'; }
+      if(!pilotOK){ ext=0; extLine='Additional current type-rated pilot not confirmed — no relief credit applied'; }
+      else if(reliefType==='jump'){ ext=0; extLine='Jump seat — sector penalty removed; no in-flight-rest FDP credit'; }
+      else if(r<3){ ext=0; extLine='Qualifying in-flight rest <3h → no FDP extension'; }
       else if(reliefType==='bunk'){ const cap=ruleSet==='NCC'?20:18; ext=r/2; capNote='cap: FDP ≤ '+hhmm(cap); extLine='Bunk rest · '+r+'h → +'+hhmm(ext)+' ('+capNote+')'; }
-      else { const cap=ruleSet==='NCC'?18:15; ext=r/3; capNote='cap: FDP ≤ '+hhmm(cap); extLine='Seat rest · '+r+'h → +'+hhmm(ext)+' ('+capNote+')'; }
+      else { const cap=ruleSet==='NCC'?18:15; ext=r/3; capNote='cap: FDP ≤ '+hhmm(cap); extLine='Reclining-seat rest · '+r+'h → +'+hhmm(ext)+' ('+capNote+')'; }
     }
 
     if(longInfo.notApplicable){
@@ -670,10 +711,15 @@
     }
     let total = tableHours + ext;
     let capped = false;
-    if(extMethod==='relief'){
+    if(extMethod==='relief' && reliefType!=='jump' && document.getElementById('additionalPilot').checked){
       const cap = reliefType==='bunk' ? (ruleSet==='NCC'?20:18) : (ruleSet==='NCC'?18:15);
       if(total>cap){ total=cap; capped=true; }
     }
+
+    if(selectedAirport){
+      const reportUtc=zonedLocalToUtc(document.getElementById('reportDate').value,document.getElementById('startTime').value,selectedAirport.tz);
+      if(reportUtc){utcReportLabel=formatUTC(reportUtc);utcEndLabel=formatUTC(new Date(reportUtc.getTime()+total*3600000));}
+    } else {utcReportLabel='';utcEndLabel='';}
 
     // Latest blocks-on (local) — start time + total FDP, wrapping past midnight
     const startMinutes = timeToMinutes(document.getElementById('startTime').value);
@@ -684,17 +730,118 @@
     const bm = Math.round(blocksMinutes%60);
     const blocksLabel = String(bh).padStart(2,'0')+':'+String(bm).padStart(2,'0')+(dayOffset>0?' (+'+dayOffset+'d)':'');
 
+    const actualReport=document.getElementById('actualReport').value;
+    const actualFinish=document.getElementById('actualFinish').value;
+    let actualFDP=null;
+    if(actualReport && actualFinish){
+      let d=timeToMinutes(actualFinish)-timeToMinutes(actualReport);
+      if(d<0)d+=1440;
+      actualFDP=d/60;
+    }
+    const minimumKnownFDP=longSectorHours()>0 ? longSectorHours()+1 : 0;
+    const intrinsicIllegal=minimumKnownFDP>total+1e-9;
+    const actualIllegal=actualFDP!==null && actualFDP>total+1e-9;
+    const illegal=intrinsicIllegal||actualIllegal;
+    let reason='';
+    if(intrinsicIllegal) reason='Minimum known FDP '+hhmm(minimumKnownFDP)+' (1:00 report + longest sector) exceeds maximum '+hhmm(total)+'.';
+    if(actualIllegal) reason+=(reason?' ':'')+'Actual FDP '+hhmm(actualFDP)+' exceeds maximum '+hhmm(total)+'.';
+
     const box = document.getElementById('fdp-result');
+    box.classList.toggle('illegal',illegal);
     box.innerHTML =
+      (illegal?'<div class="headline"><div class="num">NOT LEGAL</div><div class="lbl">'+reason+'</div></div>':'')+
       '<div class="headline-row">'+
         '<div class="item"><div class="num amber">'+hhmm(total)+'</div><div class="lbl">MAX FDP'+(capped?' (CAPPED)':'')+'</div></div>'+
-        '<div class="item"><div class="num teal">'+blocksLabel+'</div><div class="lbl">LATEST BLOCKS-ON (LOCAL)</div></div>'+
+        '<div class="item"><div class="num teal">'+blocksLabel+'</div><div class="lbl">LATEST FDP END (LOCAL)</div></div>'+
       '</div>'+
       '<div class="row"><span class="k">Table limit</span><span class="v">'+hhmm(tableHours)+'</span></div>'+
       '<div class="row"><span class="k">'+tableLine+'</span><span class="v"></span></div>'+
+      (actualFDP!==null ? '<div class="row"><span class="k">Actual report → finish</span><span class="v">'+hhmm(actualFDP)+'</span></div>' : '')+
+      (selectedAirport ? '<div class="row"><span class="k">Report location</span><span class="v">'+selectedAirport.icao+' / '+(selectedAirport.iata||'—')+' · '+selectedAirport.tz+'</span></div>' : '')+
+      (selectedAirport && utcReportLabel ? '<div class="row"><span class="k">Report time UTC</span><span class="v">'+utcReportLabel+'</span></div>' : '')+
+      (selectedAirport && utcEndLabel ? '<div class="row"><span class="k">Latest FDP end UTC</span><span class="v">'+utcEndLabel+'</span></div>' : '')+
       (extMethod!=='none' ? '<div class="row"><span class="k">'+extLine+'</span><span class="v"></span></div>' : '')+
       (extMethod==='split' ? '<div class="row"><span class="k">'+splitLine+'</span><span class="v"></span></div>' : '');
   }
+
+  // ================= AIRPORT / TIME ZONE =================
+  let airports=[], selectedAirport=null, utcReportLabel='', utcEndLabel='';
+  const airportInput=document.getElementById('reportLocation');
+  const airportMatches=document.getElementById('airportMatches');
+  const airportStatus=document.getElementById('airportStatus');
+  let airportLoadPromise=null;
+
+  function loadAirports(){
+    if(airportLoadPromise)return airportLoadPromise;
+    airportStatus.textContent='Loading global airport database…';
+    airportLoadPromise=fetch('https://raw.githubusercontent.com/mwgg/Airports/master/airports.json')
+      .then(r=>{if(!r.ok)throw new Error('Airport database unavailable');return r.json()})
+      .then(data=>{
+        airports=Object.values(data).filter(a=>a&&a.icao&&a.tz);
+        airportStatus.textContent='Global airport database ready ('+airports.length.toLocaleString()+' airports).';
+        return airports;
+      }).catch(err=>{airportStatus.textContent='Airport database could not be loaded — '+err.message;return[]});
+    return airportLoadPromise;
+  }
+  function airportText(a){return [a.icao,a.iata,a.name,a.city,a.state,a.country].filter(Boolean).join(' ')}
+  function searchAirports(q){
+    q=(q||'').trim().toLowerCase();
+    if(q.length<2){airportMatches.style.display='none';return}
+    loadAirports().then(()=>{
+      const exact=[],starts=[],contains=[];
+      for(const a of airports){
+        const vals=[a.icao,a.iata,a.name,a.city].filter(Boolean).map(x=>String(x).toLowerCase());
+        if(vals.some(v=>v===q)) exact.push(a);
+        else if(vals.some(v=>v.startsWith(q))) starts.push(a);
+        else if(vals.some(v=>v.includes(q))) contains.push(a);
+        if(exact.length+starts.length+contains.length>80)break;
+      }
+      const found=[...exact,...starts,...contains].slice(0,12);
+      airportMatches.innerHTML=found.map((a,i)=>'<option value="'+i+'">'+a.icao+' / '+(a.iata||'—')+' — '+a.name+' — '+(a.city||'')+'</option>').join('');
+      airportMatches._matches=found;
+      airportMatches.style.display=found.length?'':'none';
+      if(exact.length===1){selectAirport(exact[0]);}
+    });
+  }
+  function selectAirport(a){
+    selectedAirport=a;
+    airportInput.value=(a.icao||'')+(a.iata?' / '+a.iata:'')+' — '+a.name;
+    airportMatches.style.display='none';
+    airportStatus.textContent=(a.city||'')+(a.city?' · ':'')+(a.country||'')+' · '+a.tz;
+    renderFDP();
+  }
+  airportInput.addEventListener('focus',loadAirports);
+  airportInput.addEventListener('input',()=>{selectedAirport=null;searchAirports(airportInput.value);});
+  airportMatches.addEventListener('change',()=>{const a=airportMatches._matches?.[Number(airportMatches.value)];if(a)selectAirport(a)});
+
+  function tzOffsetMs(date,tz){
+    const p=new Intl.DateTimeFormat('en-GB',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(date);
+    const v={};p.forEach(x=>{if(x.type!=='literal')v[x.type]=x.value});
+    const asUTC=Date.UTC(+v.year,+v.month-1,+v.day,+v.hour,+v.minute,+v.second);
+    return asUTC-date.getTime();
+  }
+  function zonedLocalToUtc(dateStr,timeStr,tz){
+    if(!dateStr||!timeStr||!tz)return null;
+    const [y,m,d]=dateStr.split('-').map(Number),[hh,mm]=timeStr.split(':').map(Number);
+    let guess=new Date(Date.UTC(y,m-1,d,hh,mm,0));
+    for(let i=0;i<3;i++)guess=new Date(Date.UTC(y,m-1,d,hh,mm,0)-tzOffsetMs(guess,tz));
+    return guess;
+  }
+  function formatUTC(d){return d?d.toISOString().slice(0,16).replace('T',' ')+'Z':'';}
+
+  // Update UTC labels inside renderFDP.
+  const _oldRenderFDP=renderFDP;
+  renderFDP=function(){
+    utcReportLabel='';utcEndLabel='';
+    if(selectedAirport){
+      const reportUtc=zonedLocalToUtc(document.getElementById('reportDate').value,document.getElementById('startTime').value,selectedAirport.tz);
+      if(reportUtc){
+        utcReportLabel=formatUTC(reportUtc);
+        // provisional; recomputed after max FDP result using the displayed total is handled in result below
+      }
+    }
+    return _oldRenderFDP();
+  };
 
   // ================= REST TAB =================
   let awayBase = true, accomProvided = true, over20 = false;
