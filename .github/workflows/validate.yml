@@ -1,7 +1,7 @@
 name: Validate FTL app
 on:
   push:
-    branches: [feature/ncc-cat-aoc]
+    branches: [feature/ncc-cat-aoc, feature/beta-hardening]
   pull_request:
     branches: [main]
 
@@ -127,3 +127,9 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID' EXIT
           node tests/rule-matrix.mjs
+      - name: Shareable beta acceptance
+        run: |
+          python3 -m http.server 8000 >/tmp/ftl-beta-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          node tests/beta-acceptance.mjs
