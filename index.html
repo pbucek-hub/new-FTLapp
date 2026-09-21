@@ -211,7 +211,7 @@
     <button data-tab="fdp" class="active">Max FDP</button>
     <button data-tab="rest">Rest</button>
     <button data-tab="cumulative">Cumulative &amp; Days Off</button>
-    <button data-tab="longrange">Long-Range Exception</button>
+    <button data-tab="longrange" id="tab-longrange">Long-Range Exception</button>
     <button data-tab="reference">Reference</button>
   </nav>
 
@@ -469,6 +469,11 @@
         <div class="field"><label>Days off taken, trailing 28 days</label><input type="number" id="daysOff28" value="0" min="0" step="1"></div>
         <div class="field"><label>Days off taken, trailing 84 days</label><input type="number" id="daysOff84" value="0" min="0" step="1"></div>
       </div>
+      <div class="field" id="catAnnualOffField" style="display:none;">
+        <label>Days free of duty this calendar year</label>
+        <input type="number" id="daysOffYear" value="96" min="0" step="1">
+        <div class="hint">CAT/AOC minimum: 96 days free of duty per calendar year.</div>
+      </div>
       <div class="field">
         <label>Had 2 consecutive days off within the last 16 days?</label>
         <div class="seg" id="seg-consecoff">
@@ -635,6 +640,11 @@
     document.getElementById('ruleset-hint').textContent = v==='NCC' ? 'Part-NCC OMA Section 7.5' : 'CAT/AOC OMA Section 7';
     document.getElementById('longrange-summary').textContent = v==='NCC' ? 'Long-sector adjustment — OMA 7.5.9' : 'Long-sector adjustment — OMA 7.15';
     document.getElementById('cat-ops-helper').style.display = v==='CAT' ? '' : 'none';
+    document.getElementById('tab-longrange').style.display = v==='NCC' ? '' : 'none';
+    document.getElementById('catAnnualOffField').style.display = v==='CAT' ? '' : 'none';
+    if(v==='CAT' && document.getElementById('panel-longrange').classList.contains('active')){
+      document.querySelector('[data-tab="fdp"]').click();
+    }
     document.getElementById('longSectorHint').textContent = v==='NCC' ? 'NCC long-sector penalty begins at 09:01.' : 'CAT/AOC long-sector penalty begins above 07:00.';
     document.getElementById('hint-sectors').textContent = acclimState==='acclim' ? 'Table A caps at "8 or more."' : 'Table B caps at "7 or more."';
     document.getElementById('splitHint').textContent = v==='NCC' ? 'NCC: qualifying split rest excludes at least 20 minutes of immediate post/pre-flight duties.' : 'CAT/AOC: qualifying split rest excludes at least 30 minutes of immediate post/pre-flight duties.';
@@ -703,10 +713,13 @@
       return {hours:band.vals[idx],line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table A · '+band.label};
     }
     const rest=parseFloat(document.getElementById('precedingRest').value||'0');
+    if(Math.abs(rest-30)<1e-9){
+      return {hours:null,review:true,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · exactly 30h preceding rest requires review'};
+    }
     const table=ruleSet==='NCC'?TABLE_B:CAT_TABLE_B;
     const row=(rest<=18||rest>30)?table[0]:table[1];
     const idx=Math.min(Math.max(sectors,1),7)-1;
-    return {hours:row.vals[idx],line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · '+row.label};
+    return {hours:row.vals[idx],review:false,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · '+row.label};
   }
 
   function longSectorHours(){
@@ -754,7 +767,8 @@
         document.getElementById('delayedReportResult').textContent='Delay '+hhmm(delayMin/60)+': limit from original report; actual FDP starts at actual report.';
       } else {
         const a=tableLimitFor(orig,lookupSectors), b=tableLimitFor(actual,lookupSectors);
-        reportForTable=a.hours<=b.hours?orig:actual;
+        if(a.review||b.review){illegal=true;notes.push('Table B exactly 30h preceding-rest boundary requires operational review.');}
+        else reportForTable=a.hours<=b.hours?orig:actual;
         const start=(timeToMinutes(orig)+240)%1440;
         fdpStartTime=String(Math.floor(start/60)).padStart(2,'0')+':'+String(start%60).padStart(2,'0');
         notes.push('Delayed report ≥4h: more limiting planned/actual report band used; FDP starts 4h after original report.');
@@ -771,7 +785,8 @@
       if(standbyMin>720){illegal=true;notes.push('Standby exceeds 12h maximum.');}
       const sbLimit=tableLimitFor(sb,lookupSectors);
       const callLimit=tableLimitFor(call,lookupSectors);
-      if(callLimit.hours<sbLimit.hours) reportForTable=call;
+      if(sbLimit.review||callLimit.review){illegal=true;notes.push('Table B exactly 30h preceding-rest boundary requires operational review.');}
+      else if(callLimit.hours<sbLimit.hours) reportForTable=call;
       else reportForTable=sb;
       fdpStartTime=call;
       if(standbyMin>=360){
@@ -815,6 +830,12 @@
     const catAdj=catOperationalAdjustment(lookupSectors,nominalReport);
     const effectiveReport=catAdj.reportForTable;
     const tl=tableLimitFor(effectiveReport,lookupSectors);
+    if(tl.review){
+      const box=document.getElementById('fdp-result');
+      box.classList.remove('illegal');
+      box.innerHTML='<div class="headline"><div class="num">REVIEW REQUIRED</div><div class="lbl">Exactly 30:00 preceding rest is not assigned silently because Table B says “up to 18 or over 30” and “between 18 and 30”. Confirm the Company interpretation before use.</div></div>';
+      return;
+    }
     let tableHours=Math.max(0,tl.hours-catAdj.reduction-catAdj.preFdpCount);
     let capLabel=lookupSectors>=(acclimState==='acclim'?8:7)?(acclimState==='acclim'?'8+':'7+'):String(lookupSectors);
     let tableLine=tl.line+' · '+capLabel+' sector(s)';
@@ -1044,7 +1065,7 @@
   const LIMITS_CAT = {d7:55, d14:95, d28:190, d365:2000, f28:100, f365:900};
   let consecOffOk = true;
   seg('seg-consecoff', v=>{ consecOffOk = v==='yes'; renderCumulative(); });
-  ['d7','d14','d28','d365','f28','f365','consecDuty','daysOff28','daysOff84'].forEach(id=>{
+  ['d7','d14','d28','d365','f28','f365','consecDuty','daysOff28','daysOff84','daysOffYear'].forEach(id=>{
     document.getElementById(id).addEventListener('input', renderCumulative);
   });
 
@@ -1061,6 +1082,7 @@
     const consecDuty = parseInt(document.getElementById('consecDuty').value||'0',10);
     const daysOff28 = parseInt(document.getElementById('daysOff28').value||'0',10);
     const daysOff84 = parseInt(document.getElementById('daysOff84').value||'0',10);
+    const daysOffYear = parseInt(document.getElementById('daysOffYear').value||'0',10);
 
     function line(label, used, limit, unit){
       const st = statusFor(used, limit);
@@ -1089,6 +1111,10 @@
 
     const consecOffSt = consecOffOk ? 'ok' : 'bad';
     rows += '<div class="row"><span class="k">2 consecutive days off within last '+(ruleSet==='NCC'?16:14)+' days</span><span class="v"><span class="status '+consecOffSt+'">'+(consecOffOk?'Yes':'Overdue')+'</span></span></div>';
+    if(ruleSet==='CAT'){
+      const yst=daysOffYear>=96?'ok':'bad';
+      rows += '<div class="row"><span class="k">Calendar-year days free of duty (min 96)</span><span class="v"><span class="status '+yst+'">'+daysOffYear+'</span></span></div>';
+    }
 
     document.getElementById('cumulative-result').innerHTML = rows;
   }
