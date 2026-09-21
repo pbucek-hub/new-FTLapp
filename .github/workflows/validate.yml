@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Check embedded JavaScript syntax
         run: |
           node <<'NODE'
@@ -20,6 +21,7 @@ jobs:
           scripts.forEach((s,i)=>{ try { new Function(s); } catch(e){ console.error('Script '+i+' syntax error'); throw e; } });
           console.log('Embedded JavaScript syntax OK');
           NODE
+
       - name: Check required controls and rules
         run: |
           node <<'NODE'
@@ -30,8 +32,70 @@ jobs:
             'data-val="jump"','data-val="seat"','data-val="bunk"',
             'actualReport','actualFinish','reportLocation',
             'CAT_TABLE_A','CAT_TABLE_B','Long-sector penalty removed',
-            'NOT LEGAL'
+            'REVIEW REQUIRED','NOT LEGAL'
           ];
           for(const x of required){ if(!h.includes(x)) throw new Error('Missing '+x); }
           console.log('Required dual-rules controls present');
+          NODE
+
+      - name: Install browser test runtime
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Browser smoke and boundary tests
+        run: |
+          python3 -m http.server 8000 >/tmp/ftl-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          node <<'NODE'
+          const { chromium } = require('playwright');
+
+          (async()=>{
+            const browser = await chromium.launch({headless:true});
+            const page = await browser.newPage({viewport:{width:390,height:844}});
+            await page.goto('http://127.0.0.1:8000/index.html', {waitUntil:'networkidle'});
+
+            // Basic load and mobile layout
+            if(!(await page.title()).includes('JCC FTL Calculator')) throw new Error('Unexpected page title');
+            const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+            if(overflow) throw new Error('Horizontal overflow at iPhone-size viewport');
+
+            // NCC default should render a numeric FDP
+            let result = await page.locator('#fdp-result').innerText();
+            if(!/MAXIMUM FDP/i.test(result)) throw new Error('NCC default FDP did not render');
+
+            // Table B exactly 30:00 must never be silently assigned
+            await page.locator('#seg-acclim button[data-val="notacclim"]').click();
+            await page.locator('#precedingRest').fill('30');
+            result = await page.locator('#fdp-result').innerText();
+            if(!/REVIEW REQUIRED/i.test(result)) throw new Error('30:00 Table B boundary was not protected');
+
+            // Moving off the ambiguous boundary should calculate again
+            await page.locator('#precedingRest').fill('30.5');
+            result = await page.locator('#fdp-result').innerText();
+            if(/REVIEW REQUIRED/i.test(result) || !/MAXIMUM FDP/i.test(result)) throw new Error('Table B >30h did not return to calculation');
+
+            // CAT/AOC UI must switch cleanly and hide NCC-only long-range exception
+            await page.locator('#seg-ruleset button[data-val="CAT"]').click();
+            const catHelperVisible = await page.locator('#cat-ops-helper').isVisible();
+            const longRangeVisible = await page.locator('#tab-longrange').isVisible();
+            if(!catHelperVisible || longRangeVisible) throw new Error('CAT/AOC UI state incorrect');
+
+            // CAT two-pilot, non-acclimatised >11h must be blocked
+            await page.locator('#longSectorTime').fill('11:01');
+            result = await page.locator('#fdp-result').innerText();
+            if(!/NOT APPLICABLE/i.test(result)) throw new Error('CAT >11h non-acclimatised limit not blocked');
+
+            // Standby >12h must be flagged not legal
+            await page.locator('#longSectorTime').fill('06:00');
+            await page.locator('#useStandby').check();
+            await page.locator('#standbyStart').fill('06:00');
+            await page.locator('#standbyCallout').fill('19:00');
+            result = await page.locator('#fdp-result').innerText();
+            if(!/NOT LEGAL/i.test(result)) throw new Error('CAT standby >12h not flagged');
+
+            await browser.close();
+            console.log('Browser smoke and boundary tests passed');
+          })().catch(e=>{ console.error(e); process.exit(1); });
           NODE
