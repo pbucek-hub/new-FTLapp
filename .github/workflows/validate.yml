@@ -82,6 +82,9 @@ jobs:
             const longRangeVisible = await page.locator('#tab-longrange').isVisible();
             if(!catHelperVisible || longRangeVisible) throw new Error('CAT/AOC UI state incorrect');
 
+            // Open collapsed long-sector helper before interacting with its fields.
+            await page.locator('#longrange-helper summary').click();
+
             // CAT two-pilot, non-acclimatised >11h must be blocked
             await page.locator('#longSectorTime').fill('11:01');
             result = await page.locator('#fdp-result').innerText();
@@ -89,6 +92,7 @@ jobs:
 
             // Standby >12h must be flagged not legal
             await page.locator('#longSectorTime').fill('06:00');
+            await page.locator('#cat-ops-helper summary').click();
             await page.locator('#useStandby').check();
             await page.locator('#standbyStart').fill('06:00');
             await page.locator('#standbyCallout').fill('19:00');
