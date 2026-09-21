@@ -186,16 +186,324 @@
   .result.illegal .headline .num,.result.illegal .headline-row .num{color:var(--red)!important;}
   #airportMatches{margin-top:6px;}
   @media (max-width:420px){.grid2{grid-template-columns:1fr;}}
+
+  /* Beta UI refinement — cleaner operational hierarchy */
+  :root{
+    --bg:#0b1017;
+    --panel:#121923;
+    --panel2:#18212d;
+    --border:#273241;
+    --border-soft:#202a37;
+    --text:#f1f5f9;
+    --dim:#9aa7b7;
+    --dim2:#6f7d8d;
+    --amber:#f2b24d;
+    --teal:#66d6c2;
+    --red:#f0645a;
+    --accent:#78a9ff;
+  }
+  body{background:linear-gradient(180deg,#0a0f16 0,#0d131c 48%,#0b1017 100%);}
+  .app{max-width:760px;padding:20px 18px 80px;}
+  header.top{
+    padding:18px 18px 16px;
+    margin:0 -2px 18px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:rgba(18,25,35,.94);
+    box-shadow:0 12px 36px rgba(0,0,0,.18);
+  }
+  header.top .tail{color:var(--dim);font-size:10px;letter-spacing:.1em;}
+  header.top h1{font-size:24px;letter-spacing:-.025em;}
+  header.top .sub{line-height:1.45;}
+  header.top .rev{
+    border-left:0;
+    background:#101722;
+    border:1px solid var(--border-soft);
+    border-radius:9px;
+    padding:9px 11px;
+    color:#c8a76f;
+  }
+  nav.tabs{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(11,16,23,.94);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    padding:10px 0 12px;
+    margin-bottom:20px;
+    border-bottom:0;
+  }
+  nav.tabs button{
+    border:0;
+    background:#141c27;
+    color:#aab5c4;
+    padding:10px 14px;
+    border-radius:10px;
+    transition:transform .12s ease,background .12s ease,color .12s ease;
+  }
+  nav.tabs button:active{transform:scale(.98);}
+  nav.tabs button.active{
+    color:#08101a;
+    background:var(--accent);
+    box-shadow:0 5px 16px rgba(120,169,255,.2);
+  }
+  h2.section-title{font-size:18px;letter-spacing:-.015em;margin-bottom:6px;}
+  p.section-desc{font-size:13px;line-height:1.55;margin-bottom:20px;}
+  .field{margin-bottom:18px;}
+  .field label{font-size:10.5px;letter-spacing:.07em;color:#8e9bad;}
+  .field input[type=text],
+  .field input[type=number],
+  .field input[type=time],
+  .field input[type=date],
+  .field select{
+    background:#151e29;
+    border:1px solid #2a3747;
+    border-radius:11px;
+    min-height:46px;
+    padding:11px 13px;
+    font-size:16px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.015);
+  }
+  .field input:focus,.field select:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(120,169,255,.15);
+  }
+  .seg{gap:7px;}
+  .seg button{
+    min-height:44px;
+    border-radius:10px;
+    background:#151e29;
+    border:1px solid #2a3747;
+    color:#aab5c4;
+    transition:all .12s ease;
+  }
+  .seg button.active{
+    background:#1b2a3d;
+    color:#f7fbff;
+    border-color:var(--accent);
+    box-shadow:inset 0 0 0 1px rgba(120,169,255,.35);
+  }
+  .card,.result,details.helper{
+    border-radius:14px;
+    border-color:#253140;
+    background:#111923;
+    box-shadow:0 8px 28px rgba(0,0,0,.12);
+  }
+  .result{padding:18px 18px 16px;}
+  .headline-row{gap:10px;padding:8px 0 14px;}
+  .headline-row .item{
+    background:#0e1620;
+    border:1px solid var(--border-soft);
+    border-radius:12px;
+    padding:13px 10px;
+  }
+  .headline-row .num{font-size:31px;}
+  .headline-row .num.amber{color:#f3bf69;}
+  .headline-row .num.teal{color:#78cfc0;}
+  details.helper summary{
+    color:#b9d0f7;
+    background:#121b26;
+    padding:13px 14px;
+  }
+  details.helper .inner{background:#101822;}
+  .note{border-radius:10px;background:#101823;}
+  #airportMatches{margin-top:8px;}
+  @media(max-width:520px){
+    .app{padding:14px 12px 70px;}
+    header.top{padding:15px 14px;margin-bottom:14px;border-radius:14px;}
+    header.top h1{font-size:21px;}
+    nav.tabs{margin-left:-2px;margin-right:-2px;}
+    .grid2{grid-template-columns:1fr;}
+    .headline-row{flex-wrap:nowrap;}
+    .headline-row .item{min-width:0;}
+    .headline-row .num{font-size:26px;}
+  }
+
+
+  .result-details{margin-top:12px;border-top:1px solid var(--border-soft);padding-top:8px;}
+  .result-details summary{
+    cursor:pointer;
+    color:#a9c7f7;
+    font-size:12px;
+    font-weight:600;
+    list-style:none;
+    padding:8px 0 4px;
+  }
+  .result-details summary::-webkit-details-marker{display:none;}
+  .result-details summary::after{content:' ▾';color:var(--dim2);}
+  .result-details[open] summary::after{content:' ▴';}
+  .result-details .detail-body{margin-top:4px;}
+  .result > .note{margin-top:10px;}
+
+  /* Theme 2 — Liquid Glass */
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 18% 8%,rgba(45,122,220,.30),transparent 27%),
+      radial-gradient(circle at 88% 78%,rgba(24,86,151,.22),transparent 30%),
+      linear-gradient(155deg,#06101d 0%,#071728 44%,#040b13 100%);
+    background-attachment:fixed;
+  }
+  body:before{
+    content:'';position:fixed;inset:0;pointer-events:none;opacity:.42;
+    background:linear-gradient(115deg,rgba(255,255,255,.035),transparent 28%,rgba(64,145,255,.035) 54%,transparent 76%);
+  }
+  .app{max-width:540px;padding:18px 14px 92px;position:relative;}
+  header.top{
+    background:transparent;border:0;box-shadow:none;padding:5px 2px 10px;margin-bottom:4px;
+  }
+  .brandmark{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+  .brandplane{
+    display:grid;place-items:center;width:42px;height:42px;border-radius:12px;
+    color:#8ac7ff;font-size:25px;
+    background:linear-gradient(145deg,rgba(117,198,255,.34),rgba(29,93,170,.08));
+    box-shadow:0 0 28px rgba(62,158,255,.25),inset 0 1px 0 rgba(255,255,255,.22);
+  }
+  header.top h1{font-size:22px;margin:0;font-weight:550;letter-spacing:-.02em;}
+  .brandtag{font-size:8px;letter-spacing:.25em;color:#86a8d1;margin-top:3px;}
+  header.top .sub{
+    font-size:11px;color:#8294aa;padding:0 2px 8px;
+  }
+  .header-info{font-size:11px;color:#8191a5;margin:0 2px 8px;}
+  .header-info summary{cursor:pointer;color:#7894b6;}
+  .header-info div{padding:8px 2px 2px;line-height:1.45;}
+
+  .app > .field:first-of-type{
+    padding:4px;margin-bottom:13px;
+    border-radius:15px;
+    background:rgba(22,42,65,.52);
+    border:1px solid rgba(132,185,241,.16);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 30px rgba(0,0,0,.18);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  }
+  .app > .field:first-of-type > label,.app > .field:first-of-type .hint{display:none;}
+  #seg-ruleset{gap:0;}
+  #seg-ruleset button{
+    border:0;background:transparent;min-height:39px;border-radius:12px;color:#c0cad6;
+  }
+  #seg-ruleset button.active{
+    background:linear-gradient(180deg,rgba(72,174,255,.94),rgba(28,104,213,.88));
+    color:white;border:0;
+    box-shadow:0 0 20px rgba(58,157,255,.50),inset 0 1px 0 rgba(255,255,255,.35);
+  }
+
+  #panel-fdp{display:none;}
+  #panel-fdp.active{display:block;}
+  #panel-fdp>.section-title,#panel-fdp>.section-desc{display:none;}
+
+  #panel-fdp>.field,
+  #panel-fdp>details.helper{
+    background:linear-gradient(145deg,rgba(37,56,78,.74),rgba(19,34,52,.72));
+    border:1px solid rgba(144,183,225,.16);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 8px 24px rgba(0,0,0,.18);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-radius:14px;
+    padding:12px 13px;
+    margin-bottom:9px;
+  }
+  #panel-fdp>.field label{font-size:10px;margin-bottom:4px;color:#8ea4bf;}
+  #panel-fdp>.field .hint{font-size:10px;margin-top:4px;color:#647a94;}
+  #panel-fdp input[type=text],
+  #panel-fdp input[type=time],
+  #panel-fdp input[type=date],
+  #panel-fdp input[type=number],
+  #panel-fdp select{
+    background:rgba(7,17,29,.28);
+    border:1px solid rgba(139,184,231,.10);
+    min-height:42px;border-radius:10px;
+  }
+  #seg-acclim button,#seg-ext button,#seg-relieftype button{
+    min-height:39px;background:rgba(7,17,29,.28);border-color:rgba(137,183,231,.12);
+  }
+  #seg-acclim button.active,#seg-ext button.active,#seg-relieftype button.active{
+    background:rgba(41,111,191,.42);border-color:#4b9df0;box-shadow:0 0 15px rgba(47,139,235,.15);
+  }
+
+  #panel-fdp>details.helper{padding:0;overflow:hidden;}
+  #panel-fdp>details.helper summary{
+    background:transparent;color:#a9bed7;padding:13px 14px;
+  }
+  #panel-fdp>details.helper .inner{
+    background:rgba(5,13,23,.20);border-top:1px solid rgba(139,184,231,.10);
+  }
+
+  .calculate-btn{
+    width:100%;height:48px;border:1px solid rgba(134,207,255,.55);border-radius:15px;
+    display:flex;align-items:center;justify-content:space-between;padding:0 18px;
+    color:white;font-size:15px;font-weight:650;cursor:pointer;margin:14px 0 12px;
+    background:linear-gradient(180deg,#248ef7,#1260ce);
+    box-shadow:0 0 26px rgba(29,133,255,.45),inset 0 1px 0 rgba(255,255,255,.36);
+  }
+  .calculate-btn:active{transform:scale(.992);}
+
+  #fdp-result{
+    border:1px solid rgba(74,224,179,.45);
+    background:linear-gradient(145deg,rgba(7,62,62,.62),rgba(5,31,42,.78));
+    box-shadow:0 0 30px rgba(22,211,170,.15),inset 0 1px 0 rgba(147,255,225,.10);
+    border-radius:16px;
+  }
+  #fdp-result.illegal{
+    border-color:rgba(240,100,90,.60);
+    background:linear-gradient(145deg,rgba(78,26,35,.68),rgba(42,17,25,.80));
+    box-shadow:0 0 30px rgba(240,80,80,.12);
+  }
+  #fdp-result .headline-row{padding:3px 0 8px;}
+  #fdp-result .headline-row .item{
+    border:0;background:transparent;padding:9px 5px;
+  }
+  #fdp-result .headline-row .num{font-size:30px;color:#f4f8fc;}
+  #fdp-result .headline-row .num.teal{color:#73e6c7;}
+  #fdp-result .headline-row .lbl{font-size:9px;color:#8ea7b6;}
+  #fdp-result .headline{
+    padding:8px 0 12px;
+  }
+  #fdp-result .headline .num{font-size:29px;color:#ff8279;}
+  #fdp-result .headline .lbl{color:#d7a8a6;}
+  .result-details{
+    margin-top:8px;padding-top:0;border-top:1px solid rgba(138,184,223,.12);
+  }
+  .result-details summary{
+    padding:12px 2px 4px;color:#c3d5e9;font-size:11px;
+  }
+
+  .secondary-info{opacity:.82;}
+  .secondary-info .note{margin:0;border:0;background:transparent;padding:0;}
+
+  nav.tabs{
+    position:fixed;bottom:8px;top:auto;left:50%;transform:translateX(-50%);
+    width:min(512px,calc(100% - 24px));z-index:50;
+    display:grid;grid-template-columns:repeat(5,1fr);gap:3px;
+    margin:0;padding:5px;
+    border:1px solid rgba(132,185,241,.14);
+    border-radius:17px;
+    background:rgba(9,22,37,.86);
+    box-shadow:0 12px 38px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);
+    backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  }
+  nav.tabs button{
+    padding:9px 3px;min-width:0;font-size:9.5px;border-radius:11px;background:transparent;
+    white-space:normal;line-height:1.15;
+  }
+  nav.tabs button.active{
+    background:rgba(35,114,207,.30);color:#82c1ff;box-shadow:none;
+  }
+  @media(max-width:520px){
+    .app{padding:12px 12px 88px;}
+    .headline-row .num{font-size:26px;}
+    nav.tabs{width:calc(100% - 16px);bottom:6px;}
+  }
+
 </style>
 </head>
 <body>
 <div class="app">
 
   <header class="top">
-    <div class="tail">Jet Concierge Club · Flight Time Limitations</div>
-    <h1>Flight Time Limitation Calculator</h1>
+    <div class="brandmark"><span class="brandplane">◢</span><div><h1>JCC FTL Calculator</h1><div class="brandtag">PLAN · CHECK · FLY WITH CONFIDENCE</div></div></div>
     <div class="sub" id="ruleset-sub">NCC — <strong>2026_JCC_PART_NCC_OMA_I2R19</strong> (Issue 2, Rev 19 — 29 June 2026).</div>
-    <div class="rev">Planning aid only — not a substitute for the OMA itself, Centrik FTL reporting, or NPFO/SM approval. Confirm this is the revision current for your aircraft before relying on it operationally.</div>
+    <details class="header-info"><summary>Planning aid information</summary><div>Not a substitute for the OM-A itself, Centrik FTL reporting, or NPFO/SM approval. Confirm the revision is current for your aircraft before operational use.</div></details>
   </header>
 
   <div class="field">
@@ -366,11 +674,13 @@
       </div>
     </div>
 
+    <button type="button" class="calculate-btn" id="calculateBtn"><span>▦</span> Calculate <span>→</span></button>
     <div class="result" id="fdp-result"></div>
 
-    <div class="note">
-      <strong>Separately available, not pre-planned:</strong> OCC may extend the duty at the planning stage by up to <strong>1h00</strong> with crew agreement, no SM/NPFO sign-off needed (7.5.13). On the day, the PIC may extend the actual FDP by up to <strong>3h00</strong> at their discretion (or more in a genuine emergency) — calculated on what actually happened, not what was planned (7.5.14). Both must be reported via Centrik.
-    </div>
+    <details class="helper secondary-info">
+      <summary>Extensions / discretion</summary>
+      <div class="inner"><div class="note"><strong>Separately available, not pre-planned:</strong> OCC may extend the duty at the planning stage by up to <strong>1h00</strong> with crew agreement, no SM/NPFO sign-off needed (7.5.13). On the day, the PIC may extend the actual FDP by up to <strong>3h00</strong> at their discretion (or more in a genuine emergency) — calculated on what actually happened, not what was planned (7.5.14). Both must be reported via Centrik.</div></div>
+    </details>
   </section>
 
   <!-- ===================== TAB 2: REST ===================== -->
@@ -925,6 +1235,25 @@
       (catAdj.notes.length ? '<div class="row"><span class="k">'+catAdj.notes.join(' · ')+'</span><span class="v"></span></div>' : '')+
       (extMethod!=='none' ? '<div class="row"><span class="k">'+extLine+'</span><span class="v"></span></div>' : '')+
       (extMethod==='split' ? '<div class="row"><span class="k">'+splitLine+'</span><span class="v"></span></div>' : '');
+    compactResultDetails(box);
+  }
+
+  function compactResultDetails(box, label='Reason & JCC OM-A Reference'){
+    if(!box) return;
+    const existing=box.querySelector('.result-details');
+    if(existing) return;
+    const rows=[...box.children].filter(el=>el.classList && el.classList.contains('row'));
+    if(!rows.length) return;
+    const details=document.createElement('details');
+    details.className='result-details';
+    const summary=document.createElement('summary');
+    summary.textContent=label;
+    const body=document.createElement('div');
+    body.className='detail-body';
+    rows.forEach(r=>body.appendChild(r));
+    details.appendChild(summary);
+    details.appendChild(body);
+    box.appendChild(details);
   }
 
   // ================= AIRPORT / TIME ZONE =================
@@ -951,19 +1280,31 @@
     q=(q||'').trim().toLowerCase();
     if(q.length<2){airportMatches.style.display='none';return}
     loadAirports().then(()=>{
-      const exact=[],starts=[],contains=[];
+      // Always scan the full database for an exact ICAO/IATA code first.
+      // The previous early-exit logic could fill up on city/name partial matches
+      // before reaching a later exact four-letter ICAO entry.
+      const exactCode=airports.filter(a=>
+        (a.icao && String(a.icao).toLowerCase()===q) ||
+        (a.iata && String(a.iata).toLowerCase()===q)
+      );
+      if(exactCode.length===1){
+        selectAirport(exactCode[0]);
+        return;
+      }
+
+      const exactText=[],starts=[],contains=[];
       for(const a of airports){
         const vals=[a.icao,a.iata,a.name,a.city].filter(Boolean).map(x=>String(x).toLowerCase());
-        if(vals.some(v=>v===q)) exact.push(a);
+        if(vals.some(v=>v===q)) exactText.push(a);
         else if(vals.some(v=>v.startsWith(q))) starts.push(a);
         else if(vals.some(v=>v.includes(q))) contains.push(a);
-        if(exact.length+starts.length+contains.length>80)break;
+        if(exactText.length+starts.length+contains.length>=120) break;
       }
-      const found=[...exact,...starts,...contains].slice(0,12);
+      const found=[...exactText,...starts,...contains].slice(0,12);
       airportMatches.innerHTML=found.map((a,i)=>'<option value="'+i+'">'+a.icao+' / '+(a.iata||'—')+' — '+a.name+' — '+(a.city||'')+'</option>').join('');
       airportMatches._matches=found;
       airportMatches.style.display=found.length?'':'none';
-      if(exact.length===1){selectAirport(exact[0]);}
+      if(exactText.length===1){selectAirport(exactText[0]);}
     });
   }
   function selectAirport(a){
@@ -1042,6 +1383,7 @@
       (reducedApplied ? '<div class="row"><span class="k">−1h reduction (away, accommodation provided, floor '+ACCOM_FLOOR+'h)</span><span class="v">'+hhmm(reduced)+'</span></div>' : '')+
       (travelExtra>0 ? '<div class="row"><span class="k">+ travel time over 1h combined</span><span class="v">+'+hhmm(travelExtra)+'</span></div>' : '')+
       (over20 ? '<div class="row"><span class="k">Duty incl. positioning &gt;'+(ruleSet==='NCC'?20:18)+'h</span><span class="v"><span class="status warn">Local night required</span></span></div>' : '');
+    compactResultDetails(box);
   }
 
   ['picReducedRest','picTransport'].forEach(id=> document.getElementById(id) && document.getElementById(id).addEventListener('input', renderPicDiscretion));
@@ -1117,6 +1459,7 @@
     }
 
     document.getElementById('cumulative-result').innerHTML = rows;
+    compactResultDetails(document.getElementById('cumulative-result'));
   }
 
   // ================= LONG RANGE TAB =================
@@ -1137,7 +1480,13 @@
       '<div class="row"><span class="k">Conditions met</span><span class="v"><span class="status '+(allChecked?'ok':'bad')+'">'+(allChecked?'All 4 confirmed':'Incomplete')+'</span></span></div>'+
       '<div class="row"><span class="k">Duties this type, trailing 28 days (max 4)</span><span class="v"><span class="status '+countSt+'">'+count+'</span></span></div>'+
       '<div class="row"><span class="k">Cumulative duty, trailing 28 days (max 170h)</span><span class="v"><span class="status '+hoursSt+'">'+hours+'h</span></span></div>';
+    compactResultDetails(document.getElementById('longrange-result'));
   }
+
+  document.getElementById('calculateBtn')?.addEventListener('click',()=>{
+    renderFDP();
+    document.getElementById('fdp-result')?.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
 
   // ---------- Initial render ----------
   renderFDP();
