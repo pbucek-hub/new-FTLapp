@@ -882,7 +882,10 @@
           <div class="hint" id="longSectorHint">NCC long-sector penalty begins at 09:01.</div>
         </div>
         <div id="longsector-result"></div>
-        <div class="note">If an additional, current, type-rated pilot is carried, the long-sector modified-sector limits do not apply; use the actual sectors planned under the applicable FDP table.</div>
+        <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--text);margin-top:10px;">
+          <input type="checkbox" id="additionalPilot"> Additional current type-rated pilot carried
+        </label>
+        <div class="note">When confirmed, the long-sector modified-sector limits do not apply; use the actual sectors planned under the applicable FDP table.</div>
       </div>
     </details>
 
@@ -920,9 +923,9 @@
       </div>
       <div class="field">
         <label style="text-transform:none;letter-spacing:0;color:var(--text);">
-          <input type="checkbox" id="additionalPilot"> Additional current type-rated pilot carried
+          <input type="checkbox" id="reliefPilotQualified"> Relief pilot qualification equal/superior confirmed
         </label>
-        <div class="hint">When confirmed, the long-sector modified-sector penalty is removed and the actual sectors planned are used. Jump seat gives no in-flight-rest credit.</div>
+        <div class="hint">Required before any in-flight-rest FDP credit is applied. A jump seat provides no in-flight-rest credit.</div>
       </div>
       <div class="field" id="reliefRestField" style="display:none;">
         <label>Total qualifying in-flight rest (need not be consecutive)</label>
@@ -1261,6 +1264,7 @@
     document.getElementById(id).addEventListener('input', renderFDP);
   });
   document.getElementById('additionalPilot').addEventListener('change',renderFDP);
+  document.getElementById('reliefPilotQualified').addEventListener('change',renderFDP);
   document.getElementById('usePreFdpDuty').addEventListener('change',()=>{
     document.getElementById('preFdpDutyFields').style.display=document.getElementById('usePreFdpDuty').checked?'':'none';
     renderFDP();
@@ -1547,7 +1551,7 @@
       else if(r<=10){ ext=r/2; extLine='Split duty · '+hhmm(r)+' qualifying rest → +'+hhmm(ext); }
       else { ext=0; extReview=true; extLine='Qualifying split rest exceeds 10h, outside the published 3–10h extension table.'; }
     } else if(extMethod==='relief'){
-      const pilotOK=document.getElementById('additionalPilot').checked;
+      const pilotOK=document.getElementById('reliefPilotQualified').checked;
       const r = parseFloat(document.getElementById('reliefRest').value||'0');
       if(!pilotOK){ ext=0; extLine='Additional current type-rated pilot not confirmed — no relief credit applied'; }
       else if(reliefType==='jump'){ ext=0; extLine='Jump seat — sector penalty removed; no in-flight-rest FDP credit'; }
@@ -1578,7 +1582,7 @@
     }
     let total = tableHours + ext;
     let capped = false;
-    if(extMethod==='relief' && reliefType!=='jump' && document.getElementById('additionalPilot').checked){
+    if(extMethod==='relief' && reliefType!=='jump' && document.getElementById('reliefPilotQualified').checked){
       const cap = reliefType==='bunk' ? (ruleSet==='NCC'?20:18) : (ruleSet==='NCC'?18:15);
       if(total>cap){ total=cap; capped=true; }
     }
@@ -1926,6 +1930,7 @@
     set('sectors','2');
     set('longSectorTime','00:00');
     set('additionalPilot',false,'change');
+    set('reliefPilotQualified',false,'change');
     set('reliefRest','4');
     set('splitStart','14:00');
     set('splitEnd','19:00');
