@@ -460,6 +460,16 @@
     background:rgba(5,13,23,.20);border-top:1px solid rgba(139,184,231,.10);
   }
 
+  .action-row{display:grid;grid-template-columns:96px 1fr;gap:9px;margin:14px 0 12px;}
+  .action-row .calculate-btn{margin:0;}
+  .reset-btn{
+    height:48px;border-radius:15px;cursor:pointer;
+    border:1px solid rgba(150,183,220,.22);
+    background:rgba(18,36,57,.72);
+    color:#aebed0;font-size:13px;font-weight:600;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .reset-btn:active{transform:scale(.992);}
   .calculate-btn{
     width:100%;height:48px;border:1px solid rgba(134,207,255,.55);border-radius:15px;
     display:flex;align-items:center;justify-content:space-between;padding:0 18px;
@@ -713,7 +723,10 @@
       </div>
     </div>
 
-    <button type="button" class="calculate-btn" id="calculateBtn"><span>▦</span> Calculate <span>→</span></button>
+    <div class="action-row">
+      <button type="button" class="reset-btn" id="resetBtn">Reset</button>
+      <button type="button" class="calculate-btn" id="calculateBtn"><span>▦</span> Calculate <span>→</span></button>
+    </div>
     <div class="result" id="fdp-result"></div>
 
     <details class="helper secondary-info">
@@ -1541,6 +1554,69 @@
       '<div class="row"><span class="k">Cumulative duty, trailing 28 days (max 170h)</span><span class="v"><span class="status '+hoursSt+'">'+hours+'h</span></span></div>';
     compactResultDetails(document.getElementById('longrange-result'));
   }
+
+  function resetCalculator(){
+    const click=(sel)=>document.querySelector(sel)?.click();
+    const set=(id,val,event='input')=>{
+      const el=document.getElementById(id); if(!el)return;
+      if(el.type==='checkbox') el.checked=!!val; else el.value=val;
+      el.dispatchEvent(new Event(event,{bubbles:true}));
+    };
+
+    click('#seg-ruleset button[data-val="NCC"]');
+    click('#seg-acclim button[data-val="acclim"]');
+    click('#seg-ext button[data-val="none"]');
+    click('#seg-longsector button[data-val="no"]');
+    click('#seg-relieftype button[data-val="jump"]');
+    click('#seg-awaybase button[data-val="yes"]');
+    click('#seg-accom button[data-val="yes"]');
+    click('#seg-over20 button[data-val="no"]');
+    click('#seg-consecoff button[data-val="yes"]');
+
+    set('startTime','09:00');
+    set('reportDate',new Date().toISOString().slice(0,10));
+    set('reportLocation','');
+    selectedAirport=null;
+    airportMatches.style.display='none';
+    airportStatus.textContent='Airport database loads when you start typing.';
+    set('actualReport','');
+    set('actualFinish','');
+    set('precedingRest','12');
+    set('sectors','2');
+    set('longSectorTime','00:00');
+    set('additionalPilot',false,'change');
+    set('reliefRest','4');
+    set('splitStart','14:00');
+    set('splitEnd','19:00');
+
+    set('useDelayedReport',false,'change');
+    set('useStandby',false,'change');
+    set('useInterruptedRest',false,'change');
+    set('delayedOriginal','09:00');
+    set('delayedActual','09:00');
+    set('delayUndisturbed',false,'change');
+    set('standbyStart','06:00');
+    set('standbyCallout','11:00');
+    set('disturbanceTime','03:00');
+    set('leaveRestTime','06:00');
+
+    ['d7','d14','d28','d365','f28','f365','consecDuty','daysOff28','daysOff84'].forEach(id=>set(id,'0'));
+    set('daysOffYear','96');
+    set('lrCount','0');
+    set('lrHours','0');
+
+    document.querySelectorAll('details[open]').forEach(d=>d.removeAttribute('open'));
+    document.querySelector('[data-tab="fdp"]')?.click();
+
+    renderFDP();
+    renderRest();
+    renderPicDiscretion();
+    renderCumulative();
+    renderLongRange();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  document.getElementById('resetBtn')?.addEventListener('click',resetCalculator);
 
   document.getElementById('calculateBtn')?.addEventListener('click',()=>{
     renderFDP();
