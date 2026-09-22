@@ -955,6 +955,21 @@
       <input type="number" id="precedingDuty" value="10" min="0" step="0.5">
     </div>
 
+    <details class="helper" id="cat-rest-context" style="display:none;">
+      <summary>CAT/AOC previous standby / contactable period</summary>
+      <div class="inner">
+        <div class="field">
+          <label>Activity immediately before this rest</label>
+          <select id="catPriorActivity">
+            <option value="duty">Duty / FDP (normal rest calculation)</option>
+            <option value="standbyNoCall">Standby ended — no callout</option>
+            <option value="contactable">Contactable period ended</option>
+          </select>
+          <div class="hint" id="catPriorActivityHint">After standby with no callout: at least 12h rest. After a contactable period: at least 10h before the next duty.</div>
+        </div>
+      </div>
+    </details>
+
     <div class="field">
       <label>Away from base?</label>
       <div class="seg" id="seg-awaybase">
@@ -1214,6 +1229,7 @@
     document.getElementById('cat-ops-helper').style.display = v==='CAT' ? '' : 'none';
     document.getElementById('tab-longrange').style.display = v==='NCC' ? '' : 'none';
     document.getElementById('catAnnualOffField').style.display = v==='CAT' ? '' : 'none';
+    document.getElementById('cat-rest-context').style.display = v==='CAT' ? '' : 'none';
     if(v==='CAT' && document.getElementById('panel-longrange').classList.contains('active')){
       document.querySelector('[data-tab="fdp"]').click();
     }
@@ -1766,10 +1782,26 @@
   seg('seg-accom', v=>{ accomProvided = v==='yes'; renderRest(); });
   seg('seg-over20', v=>{ over20 = v==='yes'; renderRest(); });
   ['precedingDuty','travelMin'].forEach(id=> document.getElementById(id).addEventListener('input', renderRest));
+  document.getElementById('catPriorActivity').addEventListener('change',renderRest);
 
   function renderRest(){
     const duty = parseFloat(document.getElementById('precedingDuty').value||'0');
     const REST_BASE = ruleSet==='NCC'?10:12;
+    const catPrior = ruleSet==='CAT' ? document.getElementById('catPriorActivity').value : 'duty';
+
+    if(ruleSet==='CAT' && catPrior!=='duty'){
+      const special = catPrior==='standbyNoCall' ? 12 : 10;
+      const label = catPrior==='standbyNoCall'
+        ? 'Standby ended without callout — minimum 12h rest before next duty.'
+        : 'Contactable period ended — minimum 10h before next duty.';
+      const box=document.getElementById('rest-result');
+      box.innerHTML=
+        '<div class="headline"><div class="num">'+hhmm(special)+'</div><div class="lbl">MINIMUM REST / ELAPSED TIME REQUIRED</div></div>'+
+        '<div class="row"><span class="k">'+label+'</span><span class="v">'+hhmm(special)+'</span></div>';
+      compactResultDetails(box);
+      return;
+    }
+
     let base = Math.max(duty,REST_BASE);
     let reduced = base;
     const ACCOM_FLOOR = ruleSet==='NCC'?8:10;
@@ -1957,6 +1989,7 @@
     set('leaveRestTime','06:00');
 
     ['d7','d14','d28','d365','f28','f365','consecDuty','daysOff28','daysOff84'].forEach(id=>set(id,'0'));
+    set('catPriorActivity','duty','change');
     set('daysOffYear','96');
     set('lrCount','0');
     set('lrHours','0');
