@@ -705,6 +705,17 @@
       </div>
     </div>
 
+    <div class="field" id="field-precedingrest" style="display:none;">
+      <label for="precedingRest">Rest between duties</label>
+      <select id="precedingRest" aria-label="Rest between duties">
+        <option value="" selected disabled>Select rest window…</option>
+        <option value="low">0–18 hours</option>
+        <option value="mid">18–30 hours</option>
+        <option value="high">More than 30 hours</option>
+      </select>
+      <div class="hint">Required when not acclimatised. This selects the applicable Table B rest row.</div>
+    </div>
+
     <div class="field" id="field-starttime">
       <div class="report-datetime">
         <div class="datetime-cell">
@@ -735,17 +746,6 @@
       <input type="text" id="reportLocation" placeholder="e.g. EGLL, LHR, Heathrow, London" autocomplete="off">
       <select id="airportMatches" style="display:none;width:100%;"></select>
       <div class="hint" id="airportStatus">Airport database loads when you start typing.</div>
-    </div>
-
-    <div class="field" id="field-precedingrest" style="display:none;">
-      <label for="precedingRest">Rest between duties</label>
-      <select id="precedingRest" aria-label="Rest between duties">
-        <option value="" selected disabled>Select rest window…</option>
-        <option value="low">0–18 hours</option>
-        <option value="mid">18–30 hours</option>
-        <option value="high">More than 30 hours</option>
-      </select>
-      <div class="hint">Required when not acclimatised. This selects the applicable Table B rest row.</div>
     </div>
 
     <div class="sector-long-row">
