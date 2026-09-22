@@ -1204,7 +1204,7 @@
   ];
   const TABLE_B = [
     {label:'Preceding rest ≤18h or >30h', vals:[15,14.25,13.5,12.75,12,11.25,11]},
-    {label:'Preceding rest 18h–30h',       vals:[13.5,13,12.5,11.75,11,11,11]},
+    {label:'Preceding rest >18h–30h',      vals:[13.5,13,12.5,11.75,11,11,11]},
   ];
   const CAT_TABLE_A = [
     {label:'0600–0659', test:m=>m>=360&&m<=419, vals:[13,12.25,11.5,10.75,10,9.5,9,9]},
@@ -1215,7 +1215,7 @@
   ];
   const CAT_TABLE_B = [
     {label:'Preceding rest ≤18h or >30h', vals:[13,12.25,11.5,10.75,10,9.25,9]},
-    {label:'Preceding rest 18h–30h',       vals:[11.5,11,10.5,9.75,9,9,9]},
+    {label:'Preceding rest >18h–30h',      vals:[11.5,11,10.5,9.75,9,9,9]},
   ];
 
   let ruleSet = 'NCC';
@@ -1404,6 +1404,20 @@
     return {reportTime:start,sectors,notes,missing:false};
   }
 
+  function dutyTouchesCriticalWindow(startTime,endTime){
+    if(!startTime) return false;
+    const s=timeToMinutes(startTime);
+    if(s>=60 && s<=419) return true;
+    if(!endTime) return false;
+    let e=timeToMinutes(endTime);
+    if(e<s)e+=1440;
+    for(let t=s;t<=e;t+=15){
+      const m=t%1440;
+      if(m>=60 && m<=419)return true;
+    }
+    return false;
+  }
+
   function catSequenceAssessment(){
     const notes=[];
     if(ruleSet!=='CAT' || !document.getElementById('useCatSequence').checked){
@@ -1538,6 +1552,13 @@
     document.getElementById('longsector-result').innerHTML = '<div class="note">'+longInfo.text+(lookupSectors!==preAdj.sectors && !longInfo.notApplicable ? '<br><strong>Table lookup sectors: '+lookupSectors+'</strong>' : '')+'</div>';
 
     const nominalReport=preAdj.reportTime;
+    if(ruleSet==='CAT' && acclimState==='acclim' && !document.getElementById('useCatSequence').checked &&
+       dutyTouchesCriticalWindow(nominalReport,document.getElementById('actualFinish').value)){
+      const box=document.getElementById('fdp-result');
+      box.classList.remove('illegal');
+      box.innerHTML='<div class="headline"><div class="num">SEQUENCE CHECK</div><div class="lbl">This acclimatised CAT/AOC duty touches 0100–0659. Open CAT/AOC operational adjustments and complete the early/late/night sequence check before relying on the result.</div></div>';
+      return;
+    }
     const catAdj=catOperationalAdjustment(lookupSectors,nominalReport);
     const seqAdj=catSequenceAssessment();
     const effectiveReport=catAdj.reportForTable;
@@ -1858,8 +1879,8 @@
 
   function statusFor(used, limit){
     const pct = used/limit;
-    if(used>=limit) return 'bad';
-    if(pct>=0.9) return 'warn';
+    if(used>limit) return 'bad';
+    if(used===limit || pct>=0.9) return 'warn';
     return 'ok';
   }
 
@@ -1874,7 +1895,7 @@
     function line(label, used, limit, unit){
       const st = statusFor(used, limit);
       const remaining = Math.max(limit-used,0);
-      const msg = st==='bad' ? 'Limit reached/exceeded' : (remaining.toFixed(1).replace(/\.0$/,'')+unit+' remaining');
+      const msg = used>limit ? 'Limit exceeded' : (used===limit ? 'Limit reached' : (remaining.toFixed(1).replace(/\.0$/,'')+unit+' remaining'));
       return '<div class="row"><span class="k">'+label+'</span><span class="v"><span class="status '+st+'">'+msg+'</span></span></div>';
     }
 
