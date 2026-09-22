@@ -647,7 +647,15 @@
       </div>
     </details>
 
-    <details class="helper" id="longrange-helper">
+    <div class="field">
+      <label>Long sector?</label>
+      <div class="seg" id="seg-longsector">
+        <button data-val="no" class="active">No</button>
+        <button data-val="yes">Yes</button>
+      </div>
+    </div>
+
+    <details class="helper" id="longrange-helper" style="display:none;">
       <summary id="longrange-summary">Long-sector adjustment — OMA 7.5.9</summary>
       <div class="inner">
         <p class="section-desc" id="longrange-desc" style="margin-bottom:12px;">Enter the scheduled duration of the longest sector. The app applies the correct modified-sector rule automatically.</p>
@@ -1000,6 +1008,19 @@
     document.getElementById('hint-sectors').textContent = v==='acclim'
       ? 'Table A caps at "8 or more."'
       : 'Table B caps at "7 or more."';
+    renderFDP();
+  });
+
+  let longSectorEnabled=false;
+  seg('seg-longsector',v=>{
+    longSectorEnabled=v==='yes';
+    document.getElementById('longrange-helper').style.display=longSectorEnabled?'':'none';
+    if(!longSectorEnabled){
+      document.getElementById('longSectorTime').value='00:00';
+      document.getElementById('longrange-helper').removeAttribute('open');
+    } else if(document.getElementById('longSectorTime').value==='00:00'){
+      document.getElementById('longSectorTime').value=ruleSet==='NCC'?'09:01':'07:01';
+    }
     renderFDP();
   });
 
