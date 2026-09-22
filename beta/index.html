@@ -738,9 +738,14 @@
     </div>
 
     <div class="field" id="field-precedingrest" style="display:none;">
-      <label>Length of preceding rest (hours)</label>
-      <input type="number" id="precedingRest" value="12" min="0" step="0.5">
-      <div class="hint">Table B row is "≤18h or ≥30h" vs "between 18h and 30h."</div>
+      <label for="precedingRest">Rest between duties</label>
+      <select id="precedingRest" aria-label="Rest between duties">
+        <option value="" selected disabled>Select rest window…</option>
+        <option value="low">0–18 hours</option>
+        <option value="mid">18–30 hours</option>
+        <option value="high">More than 30 hours</option>
+      </select>
+      <div class="hint">Required when not acclimatised. This selects the applicable Table B rest row.</div>
     </div>
 
     <div class="sector-long-row">
@@ -1230,14 +1235,15 @@
       const idx=Math.min(Math.max(sectors,1),8)-1;
       return {hours:band.vals[idx],line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table A · '+band.label};
     }
-    const rest=parseFloat(document.getElementById('precedingRest').value||'0');
-    if(Math.abs(rest-30)<1e-9){
-      return {hours:null,review:true,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · exactly 30h preceding rest requires review'};
+    const restBand=document.getElementById('precedingRest').value;
+    if(!restBand){
+      return {hours:null,needsRest:true,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · rest window required'};
     }
     const table=ruleSet==='NCC'?TABLE_B:CAT_TABLE_B;
-    const row=(rest<=18||rest>30)?table[0]:table[1];
+    const row=(restBand==='mid')?table[1]:table[0];
     const idx=Math.min(Math.max(sectors,1),7)-1;
-    return {hours:row.vals[idx],review:false,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · '+row.label};
+    const restLabel=restBand==='low'?'0–18h':(restBand==='mid'?'18–30h':'>30h');
+    return {hours:row.vals[idx],review:false,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · '+restLabel+' · '+row.label};
   }
 
   function longSectorHours(){
@@ -1339,6 +1345,12 @@
   }
 
   function renderFDP(){
+    if(acclimState==='notacclim' && !document.getElementById('precedingRest').value){
+      const box=document.getElementById('fdp-result');
+      box.classList.remove('illegal');
+      box.innerHTML='<div class="headline"><div class="num">SELECT REST</div><div class="lbl">Not acclimatised: select the rest period between duties (0–18h, 18–30h, or more than 30h) before calculating maximum FDP.</div></div>';
+      return;
+    }
     const sectorsInput = parseInt(document.getElementById('sectors').value||'1',10);
     const longInfo = modifiedSectorCount(sectorsInput);
     const lookupSectors = longInfo.sectors;
@@ -1724,7 +1736,7 @@
     airportStatus.textContent='Airport database loads when you start typing.';
     set('actualReport','');
     set('actualFinish','');
-    set('precedingRest','12');
+    set('precedingRest','');
     set('sectors','2');
     set('longSectorTime','00:00');
     set('additionalPilot',false,'change');
