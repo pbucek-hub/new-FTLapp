@@ -367,6 +367,7 @@
   header.top .sub{
     font-size:11px;color:#8294aa;padding:0 2px 8px;
   }
+  .source-note{display:block;margin-top:2px;font-size:9px;color:#71869f;font-weight:400;}
   .header-info{font-size:11px;color:#8191a5;margin:0 2px 8px;}
   .header-info summary{cursor:pointer;color:#7894b6;}
   .header-info div{padding:8px 2px 2px;line-height:1.45;}
@@ -1041,8 +1042,8 @@
     ruleSet=v;
     document.getElementById('ruleset-sub').innerHTML = v==='NCC'
       ? 'NCC — <strong>2026_JCC_PART_NCC_OMA_I2R19</strong> (Issue 2, Rev 19 — 29 June 2026).'
-      : 'CAT/AOC — <strong>JCC OMA Section 7</strong> (CAT flight time limitations).';
-    document.getElementById('ruleset-hint').textContent = v==='NCC' ? 'Part-NCC OMA Section 7.5' : 'CAT/AOC OMA Section 7';
+      : 'CAT/AOC — <strong>20250629_JCC_UK_PART_CAT_OMA_I2R15_G-TAYC-1</strong> (Issue 2, Rev 15 — supplied 29 June 2025). <span class="source-note">Section 7 pages retain printed footer 20201201_JCC_OMA_I1R8.</span>';
+    document.getElementById('ruleset-hint').textContent = v==='NCC' ? 'Part-NCC OMA Section 7.5' : 'Part-CAT OM-A Section 7 · supplied extract I2R15';
     document.getElementById('longrange-summary').textContent = v==='NCC' ? 'Long-sector adjustment — OMA 7.5.9' : 'Long-sector adjustment — OMA 7.15';
     document.getElementById('cat-ops-helper').style.display = v==='CAT' ? '' : 'none';
     document.getElementById('tab-longrange').style.display = v==='NCC' ? '' : 'none';
