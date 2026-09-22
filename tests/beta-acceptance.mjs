@@ -62,6 +62,16 @@ await check('airport no match',async()=>{
   if(visible) throw new Error('no-match list should not be visible');
 });
 
+await check('report date readable',async()=>{
+  const style=await p.locator('#reportDate').evaluate(el=>{
+    const s=getComputedStyle(el); return {color:s.color,opacity:s.opacity,fontSize:s.fontSize,background:s.backgroundColor};
+  });
+  if(Number(style.opacity)<0.95) throw new Error('date field opacity too low');
+  if(parseFloat(style.fontSize)<15) throw new Error('date text too small');
+  const value=await p.locator('#reportDate').inputValue();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new Error('date value not visibly populated');
+});
+
 await check('OM-A edition visible',async()=>{
   const t=await p.locator('#ruleset-sub').textContent();
   if(!/2026_JCC_PART_NCC_OMA_I2R19/.test(t)) throw new Error('NCC edition not visible');
