@@ -111,6 +111,29 @@ await check('actual FDP illegal state',async()=>{
   await q.close();
 });
 
+await check('reset returns clean baseline',async()=>{
+  await p.locator('#seg-ruleset button[data-val="CAT"]').click();
+  await p.locator('#seg-acclim button[data-val="notacclim"]').click();
+  await p.locator('#sectors').fill('7');
+  await p.locator('#reportLocation').fill('LLBG');
+  await p.waitForTimeout(30);
+  await p.locator('#seg-longsector button[data-val="yes"]').click();
+  await p.locator('#resetBtn').click();
+  await p.waitForTimeout(20);
+
+  const rule=await p.locator('#seg-ruleset button.active').getAttribute('data-val');
+  const acclim=await p.locator('#seg-acclim button.active').getAttribute('data-val');
+  const sectors=await p.locator('#sectors').inputValue();
+  const airport=await p.locator('#reportLocation').inputValue();
+  const longSel=await p.locator('#seg-longsector button.active').getAttribute('data-val');
+
+  if(rule!=='NCC') throw new Error('ruleset did not reset to NCC');
+  if(acclim!=='acclim') throw new Error('acclimatisation did not reset');
+  if(sectors!=='2') throw new Error('sectors did not reset to 2');
+  if(airport!=='') throw new Error('airport did not clear');
+  if(longSel!=='no') throw new Error('long sector did not reset to No');
+});
+
 await check('bottom nav does not cover calculate button',async()=>{
   await p.locator('#calculateBtn').scrollIntoViewIfNeeded();
   const calc=await p.locator('#calculateBtn').boundingBox();
