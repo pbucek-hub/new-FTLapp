@@ -433,12 +433,19 @@
   }
   .report-datetime{
     display:grid;
-    grid-template-columns:minmax(118px,.86fr) minmax(150px,1.14fr);
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
     gap:8px;
     align-items:stretch;
+    width:100%;
+    max-width:100%;
+    overflow:hidden;
+    box-sizing:border-box;
   }
+  .report-datetime>*{min-width:0;max-width:100%;}
   .report-datetime input{
-    min-width:0;width:100%;
+    min-width:0!important;
+    max-width:100%!important;
+    width:100%;
     height:44px!important;min-height:44px!important;
     padding:0 12px!important;
     border-radius:11px!important;
@@ -456,6 +463,9 @@
     font-variant-numeric:tabular-nums;
   }
   #reportDate{
+    min-width:0!important;
+    max-width:100%!important;
+    overflow:hidden;
     color-scheme:dark;
     letter-spacing:0;
     font-variant-numeric:tabular-nums;
@@ -489,7 +499,7 @@
     filter:invert(92%) sepia(7%) saturate(602%) hue-rotate(174deg) brightness(107%);
   }
   @media(max-width:360px){
-    .report-datetime{grid-template-columns:minmax(105px,.82fr) minmax(140px,1.18fr);gap:6px;}
+    .report-datetime{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;}
     .report-datetime input{font-size:15px!important;padding-left:9px!important;padding-right:9px!important;}
   }
   #seg-acclim button,#seg-ext button,#seg-relieftype button{
