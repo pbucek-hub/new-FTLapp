@@ -1283,14 +1283,19 @@
       // Always scan the full database for an exact ICAO/IATA code first.
       // The previous early-exit logic could fill up on city/name partial matches
       // before reaching a later exact four-letter ICAO entry.
-      const exactCode=airports.filter(a=>
-        (a.icao && String(a.icao).toLowerCase()===q) ||
-        (a.iata && String(a.iata).toLowerCase()===q)
-      );
-      if(exactCode.length===1){
-        selectAirport(exactCode[0]);
+      const exactIcao=airports.filter(a=>a.icao && String(a.icao).toLowerCase()===q);
+      const exactIata=airports.filter(a=>a.iata && String(a.iata).toLowerCase()===q);
+
+      // ICAO is unambiguous at four characters: resolve it immediately.
+      if(q.length===4 && exactIcao.length===1){
+        selectAirport(exactIcao[0]);
         return;
       }
+
+      // Never auto-commit a 2- or 3-character match while the pilot may still
+      // be typing a four-character ICAO (e.g. LL -> LLB -> LLBG).
+      // Exact IATA remains ranked first in the suggestion list and is selected
+      // only when the pilot explicitly chooses/confirms it.
 
       const exactText=[],starts=[],contains=[];
       for(const a of airports){
@@ -1300,11 +1305,13 @@
         else if(vals.some(v=>v.includes(q))) contains.push(a);
         if(exactText.length+starts.length+contains.length>=120) break;
       }
-      const found=[...exactText,...starts,...contains].slice(0,12);
+      const preferred=[...exactIcao,...exactIata];
+      const found=[...preferred,...exactText,...starts,...contains]
+        .filter((a,i,arr)=>arr.indexOf(a)===i).slice(0,12);
       airportMatches.innerHTML=found.map((a,i)=>'<option value="'+i+'">'+a.icao+' / '+(a.iata||'—')+' — '+a.name+' — '+(a.city||'')+'</option>').join('');
       airportMatches._matches=found;
       airportMatches.style.display=found.length?'':'none';
-      if(exactText.length===1){selectAirport(exactText[0]);}
+      // Suggestions do not alter the typed identifier until explicitly chosen.
     });
   }
   function selectAirport(a){
