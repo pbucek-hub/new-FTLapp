@@ -434,42 +434,41 @@
   .report-datetime{
     display:grid;
     grid-template-columns:minmax(0,1fr) minmax(0,1fr);
-    gap:8px;
-    align-items:stretch;
+    gap:10px;
+    align-items:end;
     width:100%;
     max-width:100%;
-    overflow:hidden;
     box-sizing:border-box;
   }
-  .report-datetime>*{min-width:0;max-width:100%;}
+  .datetime-cell{min-width:0;}
+  .datetime-cell label{
+    display:block;
+    font-size:10.5px;
+    letter-spacing:.07em;
+    text-transform:uppercase;
+    color:#91a8c0;
+    margin:0 0 6px;
+  }
   .report-datetime input{
     min-width:0!important;
     max-width:100%!important;
     width:100%;
-    height:44px!important;min-height:44px!important;
-    padding:0 12px!important;
+    height:44px!important;
+    min-height:44px!important;
+    padding:0 11px!important;
     border-radius:11px!important;
     background:rgba(7,18,30,.46)!important;
     border:1px solid rgba(142,190,239,.16)!important;
     color:#f4f8fd!important;
     -webkit-text-fill-color:#f4f8fd!important;
-    font-size:16px!important;
+    font-size:15px!important;
     font-weight:540;
     line-height:44px;
     box-sizing:border-box;
   }
-  #startTime{
-    text-align:center;
+  #startTime,#reportDate{
     font-variant-numeric:tabular-nums;
-  }
-  #reportDate{
-    min-width:0!important;
-    max-width:100%!important;
-    overflow:hidden;
     color-scheme:dark;
-    letter-spacing:0;
-    font-variant-numeric:tabular-nums;
-    padding-right:10px!important;
   }
   #startTime:focus,#reportDate:focus{
     border-color:rgba(78,157,241,.72)!important;
@@ -482,25 +481,69 @@
     opacity:1;
     min-height:44px;
   }
-  #reportDate::-webkit-calendar-picker-indicator{
-    width:18px;height:18px;
-    margin:0;
-    padding:5px;
-    border-radius:7px;
-    background-color:rgba(89,154,220,.10);
-    filter:invert(92%) sepia(7%) saturate(602%) hue-rotate(174deg) brightness(107%);
-    opacity:.88;
-    cursor:pointer;
-  }
+  #reportDate::-webkit-calendar-picker-indicator,
   #startTime::-webkit-calendar-picker-indicator{
-    width:18px;height:18px;
+    width:18px;
+    height:18px;
+    margin:0;
     padding:4px;
-    opacity:.76;
+    border-radius:7px;
+    background-color:rgba(89,154,220,.08);
     filter:invert(92%) sepia(7%) saturate(602%) hue-rotate(174deg) brightness(107%);
+    opacity:.84;
   }
-  @media(max-width:360px){
-    .report-datetime{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;}
-    .report-datetime input{font-size:15px!important;padding-left:9px!important;padding-right:9px!important;}
+  .sector-long-row{
+    display:grid;
+    grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);
+    gap:10px;
+    align-items:stretch;
+    margin-bottom:14px;
+  }
+  .compact-control{
+    margin:0!important;
+    padding:12px;
+    border:1px solid rgba(142,190,239,.14);
+    border-radius:12px;
+    background:rgba(14,31,49,.38);
+    min-width:0;
+  }
+  .compact-control>label{
+    margin-bottom:7px!important;
+  }
+  #sectors{
+    width:100%;
+    height:42px;
+    min-height:42px;
+    border-radius:10px;
+    background:rgba(7,18,30,.46);
+    border:1px solid rgba(142,190,239,.16);
+    color:#f4f8fd;
+    font-size:16px;
+    font-weight:600;
+    text-align:center;
+    padding:0 34px 0 12px;
+    color-scheme:dark;
+  }
+  #seg-longsector{
+    flex-wrap:nowrap;
+    gap:8px;
+  }
+  #seg-longsector button{
+    min-width:0;
+    min-height:42px;
+    padding:9px 10px;
+  }
+  .sector-range{
+    text-align:center;
+    margin-top:5px;
+    font-size:11px;
+    color:var(--dim2);
+  }
+  @media(max-width:380px){
+    .report-datetime{gap:7px;}
+    .report-datetime input{font-size:14px!important;padding-left:8px!important;padding-right:8px!important;}
+    .sector-long-row{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:7px;}
+    .compact-control{padding:10px;}
   }
   #seg-acclim button,#seg-ext button,#seg-relieftype button{
     min-height:39px;background:rgba(7,17,29,.28);border-color:rgba(137,183,231,.12);
@@ -635,10 +678,15 @@
     </div>
 
     <div class="field" id="field-starttime">
-      <label>Local time of report / FDP start</label>
       <div class="report-datetime">
-        <input type="time" id="startTime" value="09:00" aria-label="Report time">
-        <input type="date" id="reportDate" aria-label="Report date">
+        <div class="datetime-cell">
+          <label for="startTime">Report time (local)</label>
+          <input type="time" id="startTime" value="09:00" aria-label="Report time">
+        </div>
+        <div class="datetime-cell">
+          <label for="reportDate">Report date (local)</label>
+          <input type="date" id="reportDate" aria-label="Report date">
+        </div>
       </div>
       <div class="hint">Used for the applicable start-time band.</div>
     </div>
@@ -667,10 +715,27 @@
       <div class="hint">Table B row is "≤18h or ≥30h" vs "between 18h and 30h."</div>
     </div>
 
-    <div class="field">
-      <label id="lbl-sectors">Number of sectors planned</label>
-      <input type="number" id="sectors" value="2" min="1" max="12" step="1">
-      <div class="hint" id="hint-sectors">Table A caps at "8 or more."</div>
+    <div class="sector-long-row">
+      <div class="field compact-control">
+        <label id="lbl-sectors" for="sectors">Number of sectors</label>
+        <select id="sectors" aria-label="Number of sectors">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+        <div class="sector-range" id="hint-sectors">1–6</div>
+      </div>
+
+      <div class="field compact-control">
+        <label>Long sector?</label>
+        <div class="seg" id="seg-longsector">
+          <button type="button" data-val="no" class="active">No</button>
+          <button type="button" data-val="yes">Yes</button>
+        </div>
+      </div>
     </div>
 
     <details class="helper" id="cat-ops-helper" style="display:none;">
@@ -713,14 +778,6 @@
         </div>
       </div>
     </details>
-
-    <div class="field">
-      <label>Long sector?</label>
-      <div class="seg" id="seg-longsector">
-        <button data-val="no" class="active">No</button>
-        <button data-val="yes">Yes</button>
-      </div>
-    </div>
 
     <details class="helper" id="longrange-helper" style="display:none;">
       <summary id="longrange-summary">Long-sector adjustment — OMA 7.5.9</summary>
@@ -1075,9 +1132,7 @@
   seg('seg-acclim', v=>{
     acclimState = v;
     document.getElementById('field-precedingrest').style.display = v==='acclim' ? 'none' : '';
-    document.getElementById('hint-sectors').textContent = v==='acclim'
-      ? 'Table A caps at "8 or more."'
-      : 'Table B caps at "7 or more."';
+    document.getElementById('hint-sectors').textContent = '1–6';
     renderFDP();
   });
 
@@ -1088,8 +1143,11 @@
     if(!longSectorEnabled){
       document.getElementById('longSectorTime').value='00:00';
       document.getElementById('longrange-helper').removeAttribute('open');
-    } else if(document.getElementById('longSectorTime').value==='00:00'){
-      document.getElementById('longSectorTime').value=ruleSet==='NCC'?'09:01':'07:01';
+    } else {
+      document.getElementById('longrange-helper').setAttribute('open','');
+      if(document.getElementById('longSectorTime').value==='00:00'){
+        document.getElementById('longSectorTime').value=ruleSet==='NCC'?'09:01':'07:01';
+      }
     }
     renderFDP();
   });
