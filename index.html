@@ -414,6 +414,26 @@
     border:1px solid rgba(139,184,231,.10);
     min-height:42px;border-radius:10px;
   }
+  #reportDate{
+    color:#f5f9ff;
+    -webkit-text-fill-color:#f5f9ff;
+    color-scheme:dark;
+    background:rgba(8,20,34,.62)!important;
+    border-color:rgba(142,190,239,.28)!important;
+    font-weight:550;
+    letter-spacing:.01em;
+    opacity:1;
+  }
+  #reportDate::-webkit-date-and-time-value{
+    color:#f5f9ff;
+    text-align:left;
+    opacity:1;
+  }
+  #reportDate::-webkit-calendar-picker-indicator{
+    filter:invert(88%) sepia(14%) saturate(568%) hue-rotate(175deg) brightness(108%);
+    opacity:.95;
+    cursor:pointer;
+  }
   #seg-acclim button,#seg-ext button,#seg-relieftype button{
     min-height:39px;background:rgba(7,17,29,.28);border-color:rgba(137,183,231,.12);
   }
