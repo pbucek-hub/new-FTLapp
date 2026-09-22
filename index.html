@@ -415,6 +415,18 @@
     border:1px solid rgba(139,184,231,.10);
     min-height:42px;border-radius:10px;
   }
+  .compact-override{
+    margin-top:-4px;
+    margin-bottom:10px;
+    background:rgba(14,31,49,.44)!important;
+    border-color:rgba(126,169,213,.14)!important;
+  }
+  .compact-override summary{
+    min-height:38px;
+    padding:9px 12px!important;
+    font-size:12px!important;
+    color:#a9bfd4!important;
+  }
   .report-datetime{
     display:grid;
     grid-template-columns:minmax(0,0.82fr) minmax(0,1.18fr);
@@ -586,14 +598,7 @@
       <div class="hint">Used for the applicable start-time band.</div>
     </div>
 
-    <div class="field">
-      <label>Report location — ICAO, IATA, airport or city</label>
-      <input type="text" id="reportLocation" placeholder="e.g. EGLL, LHR, Heathrow, London" autocomplete="off">
-      <select id="airportMatches" style="display:none;width:100%;"></select>
-      <div class="hint" id="airportStatus">Airport database loads when you start typing.</div>
-    </div>
-
-    <details class="helper">
+    <details class="helper compact-override">
       <summary>Actual report / finish override</summary>
       <div class="inner">
         <div class="grid2">
@@ -603,6 +608,13 @@
         <div class="hint">If both are entered, the app compares the actual FDP with the applicable maximum. Finish times earlier than report are treated as the following day.</div>
       </div>
     </details>
+
+    <div class="field">
+      <label>Report location — ICAO, IATA, airport or city</label>
+      <input type="text" id="reportLocation" placeholder="e.g. EGLL, LHR, Heathrow, London" autocomplete="off">
+      <select id="airportMatches" style="display:none;width:100%;"></select>
+      <div class="hint" id="airportStatus">Airport database loads when you start typing.</div>
+    </div>
 
     <div class="field" id="field-precedingrest" style="display:none;">
       <label>Length of preceding rest (hours)</label>
