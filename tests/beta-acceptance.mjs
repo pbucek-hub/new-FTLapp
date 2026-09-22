@@ -78,7 +78,8 @@ await check('actual FDP illegal state',async()=>{
   const override=q.locator('#panel-fdp details.helper').first();
   if(await override.getAttribute('open')===null) await override.locator('summary').click();
   await q.locator('#actualReport').fill('09:00');
-  await q.locator('#actualFinish').fill('23:59');
+  // Cross midnight so actual FDP is 15:30, deliberately above the default 15:15 limit.
+  await q.locator('#actualFinish').fill('00:30');
   const txt=await q.locator('#fdp-result').textContent();
   if(!/NOT LEGAL/.test(txt)) throw new Error('over-limit actual FDP not clearly illegal: '+txt.replace(/\s+/g,' ').trim().slice(0,220));
   if(!(await q.locator('#fdp-result').evaluate(el=>el.classList.contains('illegal')))) throw new Error('illegal visual state missing');
