@@ -433,14 +433,22 @@
   }
   .report-datetime{
     display:grid;
-    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    grid-template-columns:repeat(2,minmax(0,1fr));
     gap:10px;
     align-items:end;
     width:100%;
     max-width:100%;
     box-sizing:border-box;
+    overflow:hidden;
   }
-  .datetime-cell{min-width:0;max-width:100%;overflow:hidden;}
+  .datetime-cell{
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    min-width:0;
+    width:100%;
+    max-width:100%;
+    overflow:hidden;
+  }
   .datetime-cell label{
     display:block;
     font-size:10.5px;
@@ -472,11 +480,24 @@
     appearance:none!important;
   }
   #startTime,#reportDate{
+    display:block!important;
+    width:100%!important;
     min-width:0!important;
     max-width:100%!important;
+    inline-size:100%!important;
+    min-inline-size:0!important;
+    max-inline-size:100%!important;
     font-variant-numeric:tabular-nums;
     color-scheme:dark;
     text-align:center;
+    box-sizing:border-box!important;
+  }
+  /* iPad/iPhone Safari can impose an intrinsic width on native date controls.
+     Force both controls to the exact grid-cell width so they remain symmetrical. */
+  #reportDate{
+    -webkit-appearance:none!important;
+    appearance:none!important;
+    overflow:hidden!important;
   }
   #startTime:focus,#reportDate:focus{
     border-color:rgba(78,157,241,.72)!important;
@@ -502,14 +523,14 @@
   }
   .sector-long-row{
     display:grid;
-    grid-template-columns:minmax(112px,.72fr) minmax(0,1.28fr);
+    grid-template-columns:118px minmax(0,1fr);
     gap:10px;
     align-items:stretch;
-    margin-bottom:14px;
+    margin-bottom:10px;
   }
   .compact-control{
     margin:0!important;
-    padding:12px;
+    padding:10px 11px;
     border:1px solid rgba(142,190,239,.14);
     border-radius:12px;
     background:rgba(14,31,49,.38);
@@ -521,9 +542,9 @@
   #sectors{
     display:block;
     width:100%;
-    max-width:132px;
-    height:42px;
-    min-height:42px;
+    max-width:96px;
+    height:38px;
+    min-height:38px;
     border-radius:10px;
     background:rgba(7,18,30,.46);
     border:1px solid rgba(142,190,239,.16);
@@ -531,24 +552,21 @@
     font-size:16px;
     font-weight:600;
     text-align:center;
-    padding:0 34px 0 12px;
+    padding:0 28px 0 10px;
     color-scheme:dark;
   }
   #seg-longsector{
-    flex-wrap:nowrap;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
     gap:8px;
+    flex-wrap:nowrap;
   }
   #seg-longsector button{
     min-width:0;
-    min-height:42px;
-    padding:9px 10px;
+    min-height:38px;
+    padding:7px 9px;
   }
-  .sector-range{
-    text-align:center;
-    margin-top:5px;
-    font-size:11px;
-    color:var(--dim2);
-  }
+  .sector-range{display:none;}
   @media(max-width:380px){
     .report-datetime{gap:7px;}
     .report-datetime input{font-size:14px!important;padding-left:8px!important;padding-right:8px!important;}
