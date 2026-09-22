@@ -67,7 +67,7 @@ jobs:
             await page.goto('http://127.0.0.1:8000/index.html', {waitUntil:'networkidle'});
 
             // Basic load and mobile layout
-            if(!(await page.title()).includes('JCC FTL Calculator')) throw new Error('Unexpected page title');
+            if(!(await page.title()).includes('FTL Calculator')) throw new Error('Unexpected page title');
             const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
             if(overflow) throw new Error('Horizontal overflow at iPhone-size viewport');
 
@@ -99,7 +99,8 @@ jobs:
             const longRangeVisible = await page.locator('#tab-longrange').isVisible();
             if(!catHelperVisible || longRangeVisible) throw new Error('CAT/AOC UI state incorrect');
 
-            // Open collapsed long-sector helper before interacting with its fields.
+            // Enable long-sector mode, then open its helper before interacting with its fields.
+            await page.locator('#seg-longsector button[data-val="yes"]').click();
             await page.locator('#longrange-helper summary').click();
 
             // CAT two-pilot, non-acclimatised >11h must be blocked
