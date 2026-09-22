@@ -7,7 +7,9 @@ const browser=await chromium.launch({headless:true});
 const airportData={
   EGLL:{icao:'EGLL',iata:'LHR',name:'London Heathrow Airport',city:'London',country:'GB',tz:'Europe/London'},
   LFPG:{icao:'LFPG',iata:'CDG',name:'Charles de Gaulle Airport',city:'Paris',country:'FR',tz:'Europe/Paris'},
-  KJFK:{icao:'KJFK',iata:'JFK',name:'John F Kennedy International Airport',city:'New York',country:'US',tz:'America/New_York'}
+  KJFK:{icao:'KJFK',iata:'JFK',name:'John F Kennedy International Airport',city:'New York',country:'US',tz:'America/New_York'},
+  ZULB:{icao:'ZULB',iata:'LLB',name:'Qiannan Libo Airport',city:'Libo',country:'CN',tz:'Asia/Shanghai'},
+  LLBG:{icao:'LLBG',iata:'TLV',name:'Ben Gurion International Airport',city:'Tel Aviv',country:'IL',tz:'Asia/Jerusalem'}
 };
 
 async function newPage(viewport){
@@ -29,7 +31,7 @@ for(const viewport of [{width:390,height:844},{width:430,height:932},{width:768,
 }
 
 const p=await newPage({width:390,height:844});
-for(const [query,code] of [['EGLL','EGLL'],['LHR','EGLL'],['Heathrow','EGLL'],['London','EGLL'],['LFPG','LFPG'],['CDG','LFPG'],['Paris','LFPG']]){
+for(const [query,code] of [['EGLL','EGLL'],['LHR','EGLL'],['Heathrow','EGLL'],['London','EGLL'],['LFPG','LFPG'],['CDG','LFPG'],['Paris','LFPG'],['LLBG','LLBG']]){
   await check('airport '+query,async()=>{
     await p.locator('#reportLocation').fill('');
     await p.locator('#reportLocation').fill(query);
@@ -39,6 +41,19 @@ for(const [query,code] of [['EGLL','EGLL'],['LHR','EGLL'],['Heathrow','EGLL'],['
     if(!val.includes(code)&&!options.some(x=>x.includes(code))) throw new Error('did not resolve '+code);
   });
 }
+
+
+await check('ICAO typing not hijacked by 3-letter IATA',async()=>{
+  await p.locator('#reportLocation').fill('');
+  await p.locator('#reportLocation').pressSequentially('LL',{delay:5});
+  if((await p.locator('#reportLocation').inputValue())!=='LL') throw new Error('2-char input was auto-committed');
+  await p.locator('#reportLocation').pressSequentially('B',{delay:5});
+  if((await p.locator('#reportLocation').inputValue())!=='LLB') throw new Error('3-char input was auto-committed to IATA');
+  await p.locator('#reportLocation').pressSequentially('G',{delay:5});
+  await p.waitForTimeout(30);
+  const v=await p.locator('#reportLocation').inputValue();
+  if(!v.startsWith('LLBG')) throw new Error('LLBG did not resolve to exact ICAO; got '+v);
+});
 
 await check('airport no match',async()=>{
   await p.locator('#reportLocation').fill('ZZZZNOTREAL');
