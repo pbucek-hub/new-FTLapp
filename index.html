@@ -414,6 +414,16 @@
     border:1px solid rgba(139,184,231,.10);
     min-height:42px;border-radius:10px;
   }
+  .report-datetime{
+    display:grid;
+    grid-template-columns:minmax(0,0.82fr) minmax(0,1.18fr);
+    gap:8px;
+    align-items:center;
+  }
+  .report-datetime input{min-width:0;width:100%;}
+  @media(max-width:340px){
+    .report-datetime{grid-template-columns:1fr;}
+  }
   #reportDate{
     color:#f5f9ff;
     -webkit-text-fill-color:#f5f9ff;
@@ -558,9 +568,9 @@
 
     <div class="field" id="field-starttime">
       <label>Local time of report / FDP start</label>
-      <div class="grid2">
-        <input type="time" id="startTime" value="09:00">
-        <input type="date" id="reportDate">
+      <div class="report-datetime">
+        <input type="time" id="startTime" value="09:00" aria-label="Report time">
+        <input type="date" id="reportDate" aria-label="Report date">
       </div>
       <div class="hint">Used for the applicable start-time band.</div>
     </div>
