@@ -62,6 +62,18 @@ await check('airport no match',async()=>{
   if(visible) throw new Error('no-match list should not be visible');
 });
 
+await check('time and date controls fit equally inside card',async()=>{
+  const row=await p.locator('.report-datetime').boundingBox();
+  const time=await p.locator('#startTime').boundingBox();
+  const date=await p.locator('#reportDate').boundingBox();
+  if(!row||!time||!date) throw new Error('missing date/time geometry');
+  const eps=2;
+  if(time.x < row.x-eps || date.x < row.x-eps) throw new Error('control starts outside row');
+  if(time.x+time.width > row.x+row.width+eps) throw new Error('time exceeds row');
+  if(date.x+date.width > row.x+row.width+eps) throw new Error('date exceeds row');
+  if(Math.abs(time.width-date.width)>3) throw new Error('time/date widths differ by more than 3px');
+});
+
 await check('report date readable',async()=>{
   const style=await p.locator('#reportDate').evaluate(el=>{
     const s=getComputedStyle(el); return {color:s.color,opacity:s.opacity,fontSize:s.fontSize,background:s.backgroundColor};
