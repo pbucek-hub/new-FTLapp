@@ -429,33 +429,64 @@
   }
   .report-datetime{
     display:grid;
-    grid-template-columns:minmax(0,0.82fr) minmax(0,1.18fr);
+    grid-template-columns:minmax(118px,.86fr) minmax(150px,1.14fr);
     gap:8px;
-    align-items:center;
+    align-items:stretch;
   }
-  .report-datetime input{min-width:0;width:100%;}
-  @media(max-width:340px){
-    .report-datetime{grid-template-columns:1fr;}
+  .report-datetime input{
+    min-width:0;width:100%;
+    height:44px!important;min-height:44px!important;
+    padding:0 12px!important;
+    border-radius:11px!important;
+    background:rgba(7,18,30,.46)!important;
+    border:1px solid rgba(142,190,239,.16)!important;
+    color:#f4f8fd!important;
+    -webkit-text-fill-color:#f4f8fd!important;
+    font-size:16px!important;
+    font-weight:540;
+    line-height:44px;
+    box-sizing:border-box;
+  }
+  #startTime{
+    text-align:center;
+    font-variant-numeric:tabular-nums;
   }
   #reportDate{
-    color:#f5f9ff;
-    -webkit-text-fill-color:#f5f9ff;
     color-scheme:dark;
-    background:rgba(8,20,34,.62)!important;
-    border-color:rgba(142,190,239,.28)!important;
-    font-weight:550;
-    letter-spacing:.01em;
-    opacity:1;
+    letter-spacing:0;
+    font-variant-numeric:tabular-nums;
+    padding-right:10px!important;
+  }
+  #startTime:focus,#reportDate:focus{
+    border-color:rgba(78,157,241,.72)!important;
+    box-shadow:0 0 0 2px rgba(55,139,232,.12),inset 0 1px 0 rgba(255,255,255,.05);
+    outline:none;
   }
   #reportDate::-webkit-date-and-time-value{
-    color:#f5f9ff;
+    color:#f4f8fd;
     text-align:left;
     opacity:1;
+    min-height:44px;
   }
   #reportDate::-webkit-calendar-picker-indicator{
-    filter:invert(88%) sepia(14%) saturate(568%) hue-rotate(175deg) brightness(108%);
-    opacity:.95;
+    width:18px;height:18px;
+    margin:0;
+    padding:5px;
+    border-radius:7px;
+    background-color:rgba(89,154,220,.10);
+    filter:invert(92%) sepia(7%) saturate(602%) hue-rotate(174deg) brightness(107%);
+    opacity:.88;
     cursor:pointer;
+  }
+  #startTime::-webkit-calendar-picker-indicator{
+    width:18px;height:18px;
+    padding:4px;
+    opacity:.76;
+    filter:invert(92%) sepia(7%) saturate(602%) hue-rotate(174deg) brightness(107%);
+  }
+  @media(max-width:360px){
+    .report-datetime{grid-template-columns:minmax(105px,.82fr) minmax(140px,1.18fr);gap:6px;}
+    .report-datetime input{font-size:15px!important;padding-left:9px!important;padding-right:9px!important;}
   }
   #seg-acclim button,#seg-ext button,#seg-relieftype button{
     min-height:39px;background:rgba(7,17,29,.28);border-color:rgba(137,183,231,.12);
