@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+  <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+  <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">
+<meta charset="UTF-8">
+<meta name="theme-color" content="#06101d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Flight Duty Pro">
+<link rel="manifest" href="/new-FTLapp/install-v4/manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="/new-FTLapp/install-v4/flight-duty-pro-180.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flight Duty Pro — FTL Calculator · JCC NCC & CAT/AOC</title>
+<style>
+  :root{
+    --bg:#0E1116;
+    --panel:#161B22;
+    --panel2:#1C232C;
+    --border:#2A313C;
+    --border-soft:#232A33;
+    --text:#E8EAED;
+    --dim:#8B94A3;
+    --dim2:#5B6472;
+    --amber:#E8A33D;
+    --teal:#4FC3B0;
+    --red:#E2574C;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:720px;margin:0 auto;padding:22px 16px 72px;}
+
+  header.top{margin-bottom:18px;}
+  header.top .tail{
+    font-size:11px;letter-spacing:.06em;color:var(--dim2);text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  header.top h1{
+    font-size:22px;margin:0 0 6px;font-weight:650;letter-spacing:-0.01em;
+  }
+  header.top .sub{font-size:13px;color:var(--dim);}
+  header.top .rev{
+    margin-top:10px;font-size:12px;color:var(--amber);
+    border-left:2px solid var(--amber);padding-left:10px;
+  }
+
+  nav.tabs{
+    display:flex;gap:6px;overflow-x:auto;padding:2px 0 14px;
+    -webkit-overflow-scrolling:touch;
+    border-bottom:1px solid var(--border);margin-bottom:18px;
+  }
+  nav.tabs::-webkit-scrollbar{display:none;}
+  nav.tabs button{
+    flex:0 0 auto;background:none;border:1px solid var(--border);
+    color:var(--dim);font-family:var(--sans);font-size:13px;padding:9px 14px;
+    border-radius:7px;cursor:pointer;white-space:nowrap;
+  }
+  nav.tabs button.active{
+    color:var(--bg);background:var(--amber);border-color:var(--amber);font-weight:600;
+  }
+
+  .panel{display:none;}
+  .panel.active{display:block;animation:fade .15s ease;}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+
+  h2.section-title{font-size:16px;margin:0 0 4px;font-weight:650;}
+  p.section-desc{font-size:13px;color:var(--dim);margin:0 0 18px;}
+
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;font-size:11px;letter-spacing:.05em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:7px;
+  }
+  .field input[type=text],
+  .field input[type=number],
+  .field input[type=time],
+  .field select{
+    width:100%;background:var(--panel2);border:1px solid var(--border);
+    color:var(--text);font-family:var(--sans);font-size:15px;padding:11px 12px;
+    border-radius:8px;
+  }
+  .field input:focus,.field select:focus{outline:2px solid var(--teal);outline-offset:1px;}
+  .hint{font-size:12px;color:var(--dim2);margin-top:6px;}
+
+  .seg{display:flex;gap:8px;flex-wrap:wrap;}
+  .seg button{
+    flex:1 1 auto;min-width:110px;background:var(--panel2);border:1px solid var(--border);
+    color:var(--dim);font-family:var(--sans);font-size:13.5px;padding:11px 10px;
+    border-radius:8px;cursor:pointer;
+  }
+  .seg button.active{
+    background:var(--panel);color:var(--text);border-color:var(--teal);
+    box-shadow:inset 0 0 0 1px var(--teal);
+  }
+
+  .card{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    padding:16px;margin-bottom:16px;
+  }
+  .card .clause{
+    float:right;font-size:10.5px;font-family:var(--mono);color:var(--dim2);
+    border:1px solid var(--border-soft);padding:2px 6px;border-radius:5px;
+  }
+
+  .result{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    padding:18px;margin-top:6px;
+  }
+  .result .row{
+    display:flex;justify-content:space-between;align-items:baseline;
+    padding:8px 0;border-bottom:1px solid var(--border-soft);
+    font-size:13.5px;
+  }
+  .result .row:last-child{border-bottom:none;}
+  .result .row .k{color:var(--dim);}
+  .result .row .v{font-family:var(--mono);font-size:14px;color:var(--text);}
+  .result .headline{
+    text-align:center;padding:14px 0 18px;
+  }
+  .result .headline .num{
+    font-family:var(--mono);font-size:40px;font-weight:600;color:var(--amber);
+    letter-spacing:-0.02em;
+  }
+  .result .headline .lbl{font-size:12px;color:var(--dim);margin-top:4px;letter-spacing:.02em;}
+
+  .headline-row{display:flex;justify-content:center;gap:22px;padding:14px 0 18px;flex-wrap:wrap;}
+  .headline-row .item{flex:1 1 140px;text-align:center;}
+  .headline-row .num{font-family:var(--mono);font-size:32px;font-weight:600;letter-spacing:-0.02em;}
+  .headline-row .num.amber{color:var(--amber);}
+  .headline-row .num.teal{color:var(--teal);}
+  .headline-row .lbl{font-size:11px;color:var(--dim);margin-top:4px;letter-spacing:.02em;}
+
+  .status{
+    display:inline-block;font-size:11px;padding:3px 8px;border-radius:5px;
+    font-weight:600;letter-spacing:.02em;
+  }
+  .status.ok{background:rgba(79,195,176,.14);color:var(--teal);}
+  .status.warn{background:rgba(232,163,61,.16);color:var(--amber);}
+  .status.bad{background:rgba(226,87,76,.16);color:var(--red);}
+
+  .note{
+    font-size:12.5px;color:var(--dim);background:var(--panel2);
+    border:1px solid var(--border-soft);border-radius:8px;padding:11px 12px;margin-top:10px;
+  }
+  .note.warn{border-color:rgba(232,163,61,.35);color:#D9BC8C;}
+  .note strong{color:var(--text);}
+
+  details.helper{margin:14px 0;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+  details.helper summary{
+    padding:12px 14px;cursor:pointer;font-size:13.5px;color:var(--teal);
+    background:var(--panel);list-style:none;
+  }
+  details.helper summary::-webkit-details-marker{display:none;}
+  details.helper[open] summary{border-bottom:1px solid var(--border);}
+  details.helper .inner{padding:14px;background:var(--panel);}
+
+  table.ref{width:100%;border-collapse:collapse;font-size:12.5px;margin:10px 0 18px;}
+  table.ref th,table.ref td{
+    border:1px solid var(--border-soft);padding:7px 8px;text-align:left;
+  }
+  table.ref th{background:var(--panel2);color:var(--dim);font-weight:600;font-size:11px;}
+  table.ref td{color:var(--text);}
+
+  dl.gloss{margin:0;}
+  dl.gloss dt{font-weight:650;font-size:13.5px;margin-top:14px;}
+  dl.gloss dd{margin:4px 0 0;font-size:13px;color:var(--dim);}
+
+  .changelog li{margin-bottom:8px;font-size:13px;color:var(--dim);}
+  .changelog strong{color:var(--text);}
+
+  footer.foot{
+    margin-top:32px;padding-top:16px;border-top:1px solid var(--border);
+    font-size:11.5px;color:var(--dim2);
+  }
+
+  .btn{
+    display:inline-block;background:var(--teal);color:#0B1210;font-weight:650;
+    font-size:13.5px;padding:10px 16px;border:none;border-radius:8px;cursor:pointer;
+    margin-top:6px;
+  }
+  .btn.ghost{background:none;border:1px solid var(--border);color:var(--dim);font-weight:500;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .result.illegal{border-color:var(--red);}
+  .result.illegal .headline .num,.result.illegal .headline-row .num{color:var(--red)!important;}
+  #airportMatches{margin-top:6px;}
+  @media (max-width:420px){.grid2{grid-template-columns:1fr;}}
+
+  /* Beta UI refinement — cleaner operational hierarchy */
+  :root{
+    --bg:#0b1017;
+    --panel:#121923;
+    --panel2:#18212d;
+    --border:#273241;
+    --border-soft:#202a37;
+    --text:#f1f5f9;
+    --dim:#9aa7b7;
+    --dim2:#6f7d8d;
+    --amber:#f2b24d;
+    --teal:#66d6c2;
+    --red:#f0645a;
+    --accent:#78a9ff;
+  }
+  body{background:linear-gradient(180deg,#0a0f16 0,#0d131c 48%,#0b1017 100%);}
+  .app{max-width:760px;padding:20px 18px 80px;}
+  header.top{
+    padding:18px 18px 16px;
+    margin:0 -2px 18px;
+    border:1px solid var(--border);
+    border-radius:16px;
+    background:rgba(18,25,35,.94);
+    box-shadow:0 12px 36px rgba(0,0,0,.18);
+  }
+  header.top .tail{color:var(--dim);font-size:10px;letter-spacing:.1em;}
+  header.top h1{font-size:24px;letter-spacing:-.025em;}
+  header.top .sub{line-height:1.45;}
+  header.top .rev{
+    border-left:0;
+    background:#101722;
+    border:1px solid var(--border-soft);
+    border-radius:9px;
+    padding:9px 11px;
+    color:#c8a76f;
+  }
+  nav.tabs{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(11,16,23,.94);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    padding:10px 0 12px;
+    margin-bottom:20px;
+    border-bottom:0;
+  }
+  nav.tabs button{
+    border:0;
+    background:#141c27;
+    color:#aab5c4;
+    padding:10px 14px;
+    border-radius:10px;
+    transition:transform .12s ease,background .12s ease,color .12s ease;
+  }
+  nav.tabs button:active{transform:scale(.98);}
+  nav.tabs button.active{
+    color:#08101a;
+    background:var(--accent);
+    box-shadow:0 5px 16px rgba(120,169,255,.2);
+  }
+  h2.section-title{font-size:18px;letter-spacing:-.015em;margin-bottom:6px;}
+  p.section-desc{font-size:13px;line-height:1.55;margin-bottom:20px;}
+  .field{margin-bottom:18px;}
+  .field label{font-size:10.5px;letter-spacing:.07em;color:#8e9bad;}
+  .field input[type=text],
+  .field input[type=number],
+  .field input[type=time],
+  .field input[type=date],
+  .field select{
+    background:#151e29;
+    border:1px solid #2a3747;
+    border-radius:11px;
+    min-height:46px;
+    padding:11px 13px;
+    font-size:16px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.015);
+  }
+  .field input:focus,.field select:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(120,169,255,.15);
+  }
+  .seg{gap:7px;}
+  .seg button{
+    min-height:44px;
+    border-radius:10px;
+    background:#151e29;
+    border:1px solid #2a3747;
+    color:#aab5c4;
+    transition:all .12s ease;
+  }
+  .seg button.active{
+    background:#1b2a3d;
+    color:#f7fbff;
+    border-color:var(--accent);
+    box-shadow:inset 0 0 0 1px rgba(120,169,255,.35);
+  }
+  .card,.result,details.helper{
+    border-radius:14px;
+    border-color:#253140;
+    background:#111923;
+    box-shadow:0 8px 28px rgba(0,0,0,.12);
+  }
+  .result{padding:18px 18px 16px;}
+  .headline-row{gap:10px;padding:8px 0 14px;}
+  .headline-row .item{
+    background:#0e1620;
+    border:1px solid var(--border-soft);
+    border-radius:12px;
+    padding:13px 10px;
+  }
+  .headline-row .num{font-size:31px;}
+  .headline-row .num.amber{color:#f3bf69;}
+  .headline-row .num.teal{color:#78cfc0;}
+  details.helper summary{
+    color:#b9d0f7;
+    background:#121b26;
+    padding:13px 14px;
+  }
+  details.helper .inner{background:#101822;}
+  .note{border-radius:10px;background:#101823;}
+  #airportMatches{margin-top:8px;}
+  @media(max-width:520px){
+    .app{padding:14px 12px 70px;}
+    header.top{padding:15px 14px;margin-bottom:14px;border-radius:14px;}
+    header.top h1{font-size:21px;}
+    nav.tabs{margin-left:-2px;margin-right:-2px;}
+    .grid2{grid-template-columns:1fr;}
+    .headline-row{flex-wrap:nowrap;}
+    .headline-row .item{min-width:0;}
+    .headline-row .num{font-size:26px;}
+  }
+
+
+  .result-details{margin-top:12px;border-top:1px solid var(--border-soft);padding-top:8px;}
+  .result-details summary{
+    cursor:pointer;
+    color:#a9c7f7;
+    font-size:12px;
+    font-weight:600;
+    list-style:none;
+    padding:8px 0 4px;
+  }
+  .result-details summary::-webkit-details-marker{display:none;}
+  .result-details summary::after{content:' ▾';color:var(--dim2);}
+  .result-details[open] summary::after{content:' ▴';}
+  .result-details .detail-body{margin-top:4px;}
+  .result > .note{margin-top:10px;}
+
+  /* Theme 2 — Liquid Glass */
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 18% 8%,rgba(45,122,220,.30),transparent 27%),
+      radial-gradient(circle at 88% 78%,rgba(24,86,151,.22),transparent 30%),
+      linear-gradient(155deg,#06101d 0%,#071728 44%,#040b13 100%);
+    background-attachment:fixed;
+  }
+  body:before{
+    content:'';position:fixed;inset:0;pointer-events:none;opacity:.42;
+    background:linear-gradient(115deg,rgba(255,255,255,.035),transparent 28%,rgba(64,145,255,.035) 54%,transparent 76%);
+  }
+  .app{max-width:540px;padding:18px 14px 92px;position:relative;}
+  header.top{
+    background:transparent;border:0;box-shadow:none;padding:5px 2px 10px;margin-bottom:4px;
+  }
+  .brandmark{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+  .brandplane{
+    display:grid;place-items:center;width:42px;height:42px;border-radius:12px;
+    color:#8ac7ff;
+    background:linear-gradient(145deg,rgba(117,198,255,.34),rgba(29,93,170,.08));
+    box-shadow:0 0 28px rgba(62,158,255,.25),inset 0 1px 0 rgba(255,255,255,.22);
+  }
+  .brandplane svg{width:34px;height:25px;display:block;filter:drop-shadow(0 0 5px rgba(86,178,255,.32));}
+  header.top h1{font-size:22px;margin:0;font-weight:550;letter-spacing:-.02em;}
+  .brandtag{font-size:8px;letter-spacing:.25em;color:#86a8d1;margin-top:3px;}
+  header.top .sub{
+    font-size:11px;color:#8294aa;padding:0 2px 8px;
+  }
+  .source-note{display:block;margin-top:2px;font-size:9px;color:#71869f;font-weight:400;}
+  .header-info{font-size:11px;color:#8191a5;margin:0 2px 8px;}
+  .header-info summary{cursor:pointer;color:#7894b6;}
+  .header-info div{padding:8px 2px 2px;line-height:1.45;}
+
+  .app > .field:first-of-type{
+    padding:4px;margin-bottom:13px;
+    border-radius:15px;
+    background:rgba(22,42,65,.52);
+    border:1px solid rgba(132,185,241,.16);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 12px 30px rgba(0,0,0,.18);
+    backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  }
+  .app > .field:first-of-type > label,.app > .field:first-of-type .hint{display:none;}
+  #seg-ruleset{gap:0;}
+  #seg-ruleset button{
+    border:0;background:transparent;min-height:39px;border-radius:12px;color:#c0cad6;
+  }
+  #seg-ruleset button.active{
+    background:linear-gradient(180deg,rgba(72,174,255,.94),rgba(28,104,213,.88));
+    color:white;border:0;
+    box-shadow:0 0 20px rgba(58,157,255,.50),inset 0 1px 0 rgba(255,255,255,.35);
+  }
+
+  #panel-fdp{display:none;}
+  #panel-fdp.active{display:block;}
+  #panel-fdp>.section-title,#panel-fdp>.section-desc{display:none;}
+
+  #panel-fdp>.field,
+  #panel-fdp>details.helper{
+    background:linear-gradient(145deg,rgba(37,56,78,.74),rgba(19,34,52,.72));
+    border:1px solid rgba(144,183,225,.16);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 8px 24px rgba(0,0,0,.18);
+    backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border-radius:14px;
+    padding:12px 13px;
+    margin-bottom:9px;
+  }
+  #panel-fdp>.field label{font-size:10px;margin-bottom:4px;color:#8ea4bf;}
+  #panel-fdp>.field .hint{font-size:10px;margin-top:4px;color:#647a94;}
+  #panel-fdp input[type=text],
+  #panel-fdp input[type=time],
+  #panel-fdp input[type=date],
+  #panel-fdp input[type=number],
+  #panel-fdp select{
+    background:rgba(7,17,29,.28);
+    border:1px solid rgba(139,184,231,.10);
+    min-height:42px;border-radius:10px;
+  }
+  .compact-override{
+    margin-top:-4px;
+    margin-bottom:10px;
+    background:rgba(14,31,49,.44)!important;
+    border-color:rgba(126,169,213,.14)!important;
+  }
+  .compact-override summary{
+    min-height:38px;
+    padding:9px 12px!important;
+    font-size:12px!important;
+    color:#a9bfd4!important;
+  }
+  .report-datetime{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:8px;
+    align-items:stretch;
+    width:100%;
+    max-width:100%;
+    overflow:hidden;
+    box-sizing:border-box;
+  }
+  .report-datetime>*{min-width:0;max-width:100%;}
+  .report-datetime input{
+    min-width:0!important;
+    max-width:100%!important;
+    width:100%;
+    height:44px!important;min-height:44px!important;
+    padding:0 12px!important;
+    border-radius:11px!important;
+    background:rgba(7,18,30,.46)!important;
+    border:1px solid rgba(142,190,239,.16)!important;
+    color:#f4f8fd!important;
+    -webkit-text-fill-color:#f4f8fd!important;
+    font-size:16px!important;
+    font-weight:540;
+    line-height:44px;
+    box-sizing:border-box;
+  }
+  #startTime{
+    text-align:center;
+    font-variant-numeric:tabular-nums;
+  }
+  #reportDate{
+    min-width:0!important;
+    max-width:100%!important;
+    overflow:hidden;
+    color-scheme:dark;
+    letter-spacing:0;
+    font-variant-numeric:tabular-nums;
+    padding-right:10px!important;
+  }
+  #startTime:focus,#reportDate:focus{
+    border-color:rgba(78,157,241,.72)!important;
+    box-shadow:0 0 0 2px rgba(55,139,232,.12),inset 0 1px 0 rgba(255,255,255,.05);
+    outline:none;
+  }
+  #reportDate::-webkit-date-and-time-value{
+    color:#f4f8fd;
+    text-align:left;
+    opacity:1;
+    min-height:44px;
+  }
+  #reportDate::-webkit-calendar-picker-indicator{
+    width:18px;height:18px;
+    margin:0;
+    padding:5px;
+    border-radius:7px;
+    background-color:rgba(89,154,220,.10);
+    filter:invert(92%) sepia(7%) saturate(602%) hue-rotate(174deg) brightness(107%);
+    opacity:.88;
+    cursor:pointer;
+  }
+  #startTime::-webkit-calendar-picker-indicator{
+    width:18px;height:18px;
+    padding:4px;
+    opacity:.76;
+    filter:invert(92%) sepia(7%) saturate(602%) hue-rotate(174deg) brightness(107%);
+  }
+  @media(max-width:360px){
+    .report-datetime{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;}
+    .report-datetime input{font-size:15px!important;padding-left:9px!important;padding-right:9px!important;}
+  }
+  #seg-acclim button,#seg-ext button,#seg-relieftype button{
+    min-height:39px;background:rgba(7,17,29,.28);border-color:rgba(137,183,231,.12);
+  }
+  #seg-acclim button.active,#seg-ext button.active,#seg-relieftype button.active{
+    background:rgba(41,111,191,.42);border-color:#4b9df0;box-shadow:0 0 15px rgba(47,139,235,.15);
+  }
+
+  #panel-fdp>details.helper{padding:0;overflow:hidden;}
+  #panel-fdp>details.helper summary{
+    background:transparent;color:#a9bed7;padding:13px 14px;
+  }
+  #panel-fdp>details.helper .inner{
+    background:rgba(5,13,23,.20);border-top:1px solid rgba(139,184,231,.10);
+  }
+
+  .action-row{display:grid;grid-template-columns:96px 1fr;gap:9px;margin:14px 0 12px;}
+  .action-row .calculate-btn{margin:0;}
+  .reset-btn{
+    height:48px;border-radius:15px;cursor:pointer;
+    border:1px solid rgba(150,183,220,.22);
+    background:rgba(18,36,57,.72);
+    color:#aebed0;font-size:13px;font-weight:600;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .reset-btn:active{transform:scale(.992);}
+  .calculate-btn{
+    width:100%;height:48px;border:1px solid rgba(134,207,255,.55);border-radius:15px;
+    display:flex;align-items:center;justify-content:space-between;padding:0 18px;
+    color:white;font-size:15px;font-weight:650;cursor:pointer;margin:14px 0 12px;
+    background:linear-gradient(180deg,#248ef7,#1260ce);
+    box-shadow:0 0 26px rgba(29,133,255,.45),inset 0 1px 0 rgba(255,255,255,.36);
+  }
+  .calculate-btn:active{transform:scale(.992);}
+
+  #fdp-result{
+    border:1px solid rgba(74,224,179,.45);
+    background:linear-gradient(145deg,rgba(7,62,62,.62),rgba(5,31,42,.78));
+    box-shadow:0 0 30px rgba(22,211,170,.15),inset 0 1px 0 rgba(147,255,225,.10);
+    border-radius:16px;
+  }
+  #fdp-result.illegal{
+    border-color:rgba(240,100,90,.60);
+    background:linear-gradient(145deg,rgba(78,26,35,.68),rgba(42,17,25,.80));
+    box-shadow:0 0 30px rgba(240,80,80,.12);
+  }
+  #fdp-result .headline-row{padding:3px 0 8px;}
+  #fdp-result .headline-row .item{
+    border:0;background:transparent;padding:9px 5px;
+  }
+  #fdp-result .headline-row .num{font-size:30px;color:#f4f8fc;}
+  #fdp-result .headline-row .num.teal{color:#73e6c7;}
+  #fdp-result .headline-row .lbl{font-size:9px;color:#8ea7b6;}
+  #fdp-result .headline{
+    padding:8px 0 12px;
+  }
+  #fdp-result .headline .num{font-size:29px;color:#ff8279;}
+  #fdp-result .headline .lbl{color:#d7a8a6;}
+  .result-details{
+    margin-top:8px;padding-top:0;border-top:1px solid rgba(138,184,223,.12);
+  }
+  .result-details summary{
+    padding:12px 2px 4px;color:#c3d5e9;font-size:11px;
+  }
+
+  .secondary-info{opacity:.82;}
+  .secondary-info .note{margin:0;border:0;background:transparent;padding:0;}
+
+  nav.tabs{
+    position:fixed;bottom:8px;top:auto;left:50%;transform:translateX(-50%);
+    width:min(512px,calc(100% - 24px));z-index:50;
+    display:grid;grid-template-columns:repeat(5,1fr);gap:3px;
+    margin:0;padding:5px;
+    border:1px solid rgba(132,185,241,.14);
+    border-radius:17px;
+    background:rgba(9,22,37,.86);
+    box-shadow:0 12px 38px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.06);
+    backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  }
+  nav.tabs button{
+    padding:9px 3px;min-width:0;font-size:9.5px;border-radius:11px;background:transparent;
+    white-space:normal;line-height:1.15;
+  }
+  nav.tabs button.active{
+    background:rgba(35,114,207,.30);color:#82c1ff;box-shadow:none;
+  }
+  @media(max-width:520px){
+    .app{padding:12px 12px 88px;}
+    .headline-row .num{font-size:26px;}
+    nav.tabs{width:calc(100% - 16px);bottom:6px;}
+  }
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brandmark"><span class="brandplane" aria-hidden="true"><svg viewBox="0 0 88 48" role="img"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18h20l8 6M8 24h17l7 4M13 30h14l6 2M83 18H63l-8 6M80 24H63l-7 4M75 30H61l-6 2" stroke-width="3.2"/><circle cx="44" cy="24" r="15" fill="#0b2038" stroke-width="2.6"/><path d="M44 13v3M44 32v3M33 24h3M52 24h3M44 24l7-6M44 24l-6-4" stroke-width="2.2"/><circle cx="44" cy="24" r="1.8" fill="currentColor" stroke="none"/></g></svg></span><div><h1>Flight Duty Pro</h1><div class="brandtag">FTL CALCULATOR · JCC NCC &amp; CAT/AOC</div></div></div>
+    <div class="sub" id="ruleset-sub">NCC — <strong>2026_JCC_PART_NCC_OMA_I2R19</strong> (Issue 2, Rev 19 — 29 June 2026).</div>
+    <details class="header-info"><summary>Planning aid information</summary><div>Not a substitute for the OM-A itself, Centrik FTL reporting, or NPFO/SM approval. Confirm the revision is current for your aircraft before operational use.</div></details>
+  </header>
+
+  <div class="field">
+    <label>Rule set</label>
+    <div class="seg" id="seg-ruleset">
+      <button data-val="NCC" class="active">NCC</button>
+      <button data-val="CAT">CAT / AOC</button>
+    </div>
+    <div class="hint" id="ruleset-hint">Part-NCC OMA Section 7.5</div>
+  </div>
+
+  <nav class="tabs" id="tabs">
+    <button data-tab="fdp" class="active">Max FDP</button>
+    <button data-tab="rest">Rest</button>
+    <button data-tab="cumulative">Cumulative &amp; Days Off</button>
+    <button data-tab="longrange" id="tab-longrange">Long-Range Exception</button>
+    <button data-tab="reference">Reference</button>
+  </nav>
+
+  <!-- ===================== TAB 1: MAX FDP ===================== -->
+  <section class="panel active" id="panel-fdp">
+    <h2 class="section-title">Maximum Flying Duty Period</h2>
+    <p class="section-desc">Two-pilot crew. Table A applies if acclimatised at the place the FDP starts; Table B otherwise. <span class="clause" style="float:none;display:inline-block;">OMA 7.5.8</span></p>
+
+    <div class="field">
+      <label>Acclimatisation status</label>
+      <div class="seg" id="seg-acclim">
+        <button data-val="acclim" class="active">Acclimatised</button>
+        <button data-val="notacclim">Not acclimatised</button>
+      </div>
+    </div>
+
+    <div class="field" id="field-starttime">
+      <label>Local time of report / FDP start</label>
+      <div class="report-datetime">
+        <input type="time" id="startTime" value="09:00" aria-label="Report time">
+        <input type="date" id="reportDate" aria-label="Report date">
+      </div>
+      <div class="hint">Used for the applicable start-time band.</div>
+    </div>
+
+    <details class="helper compact-override">
+      <summary>Actual report / finish override</summary>
+      <div class="inner">
+        <div class="grid2">
+          <div class="field"><label>Actual report time</label><input type="time" id="actualReport"></div>
+          <div class="field"><label>Actual finish time</label><input type="time" id="actualFinish"></div>
+        </div>
+        <div class="hint">If both are entered, the app compares the actual FDP with the applicable maximum. Finish times earlier than report are treated as the following day.</div>
+      </div>
+    </details>
+
+    <div class="field">
+      <label>Report location — ICAO, IATA, airport or city</label>
+      <input type="text" id="reportLocation" placeholder="e.g. EGLL, LHR, Heathrow, London" autocomplete="off">
+      <select id="airportMatches" style="display:none;width:100%;"></select>
+      <div class="hint" id="airportStatus">Airport database loads when you start typing.</div>
+    </div>
+
+    <div class="field" id="field-precedingrest" style="display:none;">
+      <label>Length of preceding rest (hours)</label>
+      <input type="number" id="precedingRest" value="12" min="0" step="0.5">
+      <div class="hint">Table B row is "≤18h or ≥30h" vs "between 18h and 30h."</div>
+    </div>
+
+    <div class="field">
+      <label id="lbl-sectors">Number of sectors planned</label>
+      <input type="number" id="sectors" value="2" min="1" max="12" step="1">
+      <div class="hint" id="hint-sectors">Table A caps at "8 or more."</div>
+    </div>
+
+    <details class="helper" id="cat-ops-helper" style="display:none;">
+      <summary>CAT/AOC operational adjustments — delayed report, standby, interrupted rest</summary>
+      <div class="inner">
+        <div class="field">
+          <label style="text-transform:none;letter-spacing:0;color:var(--text);"><input type="checkbox" id="useDelayedReport"> Delayed reporting</label>
+          <div id="delayedReportFields" style="display:none;">
+            <div class="grid2">
+              <div class="field"><label>Original report</label><input type="time" id="delayedOriginal" value="09:00"></div>
+              <div class="field"><label>Actual report</label><input type="time" id="delayedActual" value="09:00"></div>
+            </div>
+            <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--text);">
+              <input type="checkbox" id="delayUndisturbed"> If delay is ≥10h, no further Company disturbance until mutually agreed time
+            </label>
+            <div class="hint" id="delayedReportResult"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label style="text-transform:none;letter-spacing:0;color:var(--text);"><input type="checkbox" id="useStandby"> Standby before FDP</label>
+          <div id="standbyFields" style="display:none;">
+            <div class="grid2">
+              <div class="field"><label>Standby start</label><input type="time" id="standbyStart" value="06:00"></div>
+              <div class="field"><label>Report / callout</label><input type="time" id="standbyCallout" value="11:00"></div>
+            </div>
+            <div class="hint" id="standbyResult"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label style="text-transform:none;letter-spacing:0;color:var(--text);"><input type="checkbox" id="useInterruptedRest"> Interrupted rest for operational reasons (2300–0700)</label>
+          <div id="interruptedRestFields" style="display:none;">
+            <div class="grid2">
+              <div class="field"><label>Disturbance time</label><input type="time" id="disturbanceTime" value="03:00"></div>
+              <div class="field"><label>Departure from place of rest</label><input type="time" id="leaveRestTime" value="06:00"></div>
+            </div>
+            <div class="hint" id="interruptedRestResult"></div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <div class="field">
+      <label>Long sector?</label>
+      <div class="seg" id="seg-longsector">
+        <button data-val="no" class="active">No</button>
+        <button data-val="yes">Yes</button>
+      </div>
+    </div>
+
+    <details class="helper" id="longrange-helper" style="display:none;">
+      <summary id="longrange-summary">Long-sector adjustment — OMA 7.5.9</summary>
+      <div class="inner">
+        <p class="section-desc" id="longrange-desc" style="margin-bottom:12px;">Enter the scheduled duration of the longest sector. The app applies the correct modified-sector rule automatically.</p>
+        <div class="field">
+          <label>Longest scheduled sector</label>
+          <input type="time" id="longSectorTime" value="06:00" step="60">
+          <div class="hint" id="longSectorHint">NCC long-sector penalty begins at 09:01.</div>
+        </div>
+        <div id="longsector-result"></div>
+        <div class="note">If an additional, current, type-rated pilot is carried, the long-sector modified-sector limits do not apply; use the actual sectors planned under the applicable FDP table.</div>
+      </div>
+    </details>
+
+    <div class="field">
+      <label>Extension method (choose one, if any)</label>
+      <div class="seg" id="seg-ext">
+        <button data-val="none" class="active">None</button>
+        <button data-val="split">Split duty</button>
+        <button data-val="relief">In-flight relief</button>
+      </div>
+    </div>
+
+    <div id="ext-split" style="display:none;">
+      <div class="grid2">
+        <div class="field">
+          <label>Start of split (local)</label>
+          <input type="time" id="splitStart" value="14:00">
+        </div>
+        <div class="field">
+          <label>End of split (local)</label>
+          <input type="time" id="splitEnd" value="19:00">
+        </div>
+      </div>
+      <div class="hint" id="splitHint">Rest is worked out automatically as the gap between these two times. NCC qualifying rest excludes at least 20 minutes of immediate post/pre-flight duties; CAT/AOC excludes at least 30 minutes.</div>
+    </div>
+
+    <div id="ext-relief" style="display:none;">
+      <div class="field">
+        <label>Rest taken in</label>
+        <div class="seg" id="seg-relieftype">
+          <button data-val="jump" class="active">Jump seat</button>
+          <button data-val="seat">Reclining seat</button>
+          <button data-val="bunk">Bunk</button>
+        </div>
+      </div>
+      <div class="field">
+        <label style="text-transform:none;letter-spacing:0;color:var(--text);">
+          <input type="checkbox" id="additionalPilot"> Additional current type-rated pilot carried
+        </label>
+        <div class="hint">When confirmed, the long-sector modified-sector penalty is removed and the actual sectors planned are used. Jump seat gives no in-flight-rest credit.</div>
+      </div>
+      <div class="field" id="reliefRestField" style="display:none;">
+        <label>Total qualifying in-flight rest (need not be consecutive)</label>
+        <input type="number" id="reliefRest" value="4" min="0" step="0.5">
+      </div>
+    </div>
+
+    <div class="action-row">
+      <button type="button" class="reset-btn" id="resetBtn">Reset</button>
+      <button type="button" class="calculate-btn" id="calculateBtn"><span>▦</span> Calculate <span>→</span></button>
+    </div>
+    <div class="result" id="fdp-result"></div>
+
+    <details class="helper secondary-info">
+      <summary>Extensions / discretion</summary>
+      <div class="inner"><div class="note"><strong>Separately available, not pre-planned:</strong> OCC may extend the duty at the planning stage by up to <strong>1h00</strong> with crew agreement, no SM/NPFO sign-off needed (7.5.13). On the day, the PIC may extend the actual FDP by up to <strong>3h00</strong> at their discretion (or more in a genuine emergency) — calculated on what actually happened, not what was planned (7.5.14). Both must be reported via Centrik.</div></div>
+    </details>
+  </section>
+
+  <!-- ===================== TAB 2: REST ===================== -->
+  <section class="panel" id="panel-rest">
+    <h2 class="section-title">Minimum Rest Period</h2>
+    <p class="section-desc">Standard minimum rest before an FDP. <span class="clause" style="float:none;display:inline-block;">OMA 7.5.12</span></p>
+
+    <div class="field">
+      <label>Length of the preceding duty period (hours)</label>
+      <input type="number" id="precedingDuty" value="10" min="0" step="0.5">
+    </div>
+
+    <div class="field">
+      <label>Away from base?</label>
+      <div class="seg" id="seg-awaybase">
+        <button data-val="yes" class="active">Yes</button>
+        <button data-val="no">No</button>
+      </div>
+    </div>
+
+    <div id="awaybase-fields">
+      <div class="field">
+        <label>Company-provided suitable accommodation?</label>
+        <div class="seg" id="seg-accom">
+          <button data-val="yes" class="active">Yes</button>
+          <button data-val="no">No</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Travel time between aerodrome and accommodation, each way (minutes)</label>
+        <input type="number" id="travelMin" value="20" min="0" step="5">
+      </div>
+    </div>
+
+    <div class="field">
+      <label id="longDutyRestLabel">Did the preceding duty (incl. any positioning) exceed 20 hours?</label>
+      <div class="seg" id="seg-over20">
+        <button data-val="no" class="active">No</button>
+        <button data-val="yes">Yes</button>
+      </div>
+    </div>
+
+    <div class="result" id="rest-result"></div>
+
+    <details class="helper">
+      <summary>PIC's discretion to reduce rest further (OMA 7.5.15 — rewritten in this revision)</summary>
+      <div class="inner">
+        <p class="section-desc" style="margin-bottom:12px;">
+          This is no longer a simple "not below 9 hours" rule. Before a PIC reduces rest below the 7.5.12 minimum, a documented fatigue risk assessment covering all crew is required, monitored by the NPFO and NPGO. It considers: length of preceding duty, current/perceived fatigue, frequency of recent extensions/reductions, acclimatisation status, impact of the time-of-day change, any additional duties before the next FDP, transport time to accommodation, and the length/complexity of the following FDP.
+        </p>
+        <div class="field">
+          <label>Proposed reduced rest (hours)</label>
+          <input type="number" id="picReducedRest" value="8.5" min="0" step="0.25">
+        </div>
+        <div class="field">
+          <label>Actual transport time to and from accommodation, combined (hours)</label>
+          <input type="number" id="picTransport" value="0.5" min="0" step="0.25">
+        </div>
+        <div id="pic-discretion-result"></div>
+        <div class="note warn"><strong>Reminder:</strong> the 60-minute minimum reporting time is part of the FDP and can never be reduced to accommodate a rest reduction, regardless of this floor.</div>
+        <div class="note">Reporting timing (7.5.16): an <strong>FTL exceedance</strong> report goes in immediately after the flight. A <strong>reduction-of-rest</strong> report must go in <em>before</em> the next flight — the one following the reduced rest.</div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ===================== TAB 3: CUMULATIVE ===================== -->
+  <section class="panel" id="panel-cumulative">
+    <h2 class="section-title">Cumulative Duty &amp; Days Off</h2>
+    <p class="section-desc">Rolling limits on duty and flight time, plus days-off entitlement. <span class="clause" style="float:none;display:inline-block;">OMA 7.5.17 – 7.5.19</span></p>
+
+    <div class="card">
+      <span class="clause">7.5.19.1</span>
+      <div style="font-weight:600;margin-bottom:10px;">Maximum duty hours</div>
+      <div class="grid2">
+        <div class="field"><label>Duty hours, trailing 7 days</label><input type="number" id="d7" value="0" min="0" step="0.5"></div>
+        <div class="field"><label>Duty hours, trailing 14 days</label><input type="number" id="d14" value="0" min="0" step="0.5"></div>
+        <div class="field"><label>Duty hours, trailing 28 days</label><input type="number" id="d28" value="0" min="0" step="0.5"></div>
+        <div class="field"><label>Duty hours, trailing 12 months</label><input type="number" id="d365" value="0" min="0" step="1"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="clause">7.5.18</span>
+      <div style="font-weight:600;margin-bottom:10px;">Absolute flight time limits</div>
+      <div class="grid2">
+        <div class="field"><label>Flight time, trailing 28 days</label><input type="number" id="f28" value="0" min="0" step="0.5"></div>
+        <div class="field"><label>Flight time, trailing 12 months</label><input type="number" id="f365" value="0" min="0" step="1"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="clause">7.5.17</span>
+      <div style="font-weight:600;margin-bottom:10px;">Days off</div>
+      <div class="field"><label>Consecutive duty days already worked without a day off</label><input type="number" id="consecDuty" value="0" min="0" step="1"></div>
+      <div class="grid2">
+        <div class="field"><label>Days off taken, trailing 28 days</label><input type="number" id="daysOff28" value="0" min="0" step="1"></div>
+        <div class="field"><label>Days off taken, trailing 84 days</label><input type="number" id="daysOff84" value="0" min="0" step="1"></div>
+      </div>
+      <div class="field" id="catAnnualOffField" style="display:none;">
+        <label>Days free of duty this calendar year</label>
+        <input type="number" id="daysOffYear" value="96" min="0" step="1">
+        <div class="hint">CAT/AOC minimum: 96 days free of duty per calendar year.</div>
+      </div>
+      <div class="field">
+        <label>Had 2 consecutive days off within the last 16 days?</label>
+        <div class="seg" id="seg-consecoff">
+          <button data-val="yes" class="active">Yes</button>
+          <button data-val="no">No</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="result" id="cumulative-result"></div>
+  </section>
+
+  <!-- ===================== TAB 4: LONG RANGE ===================== -->
+  <section class="panel" id="panel-longrange">
+    <h2 class="section-title">Owner-Flight Long-Range Exception</h2>
+    <p class="section-desc">For a two-pilot crew flying a sector over 9 hours, planned <em>without</em> the 7.5.9 sector-multiplier limits. <span class="clause" style="float:none;display:inline-block;">OMA 7.5.9.1</span></p>
+
+    <div class="card">
+      <div style="font-weight:600;margin-bottom:10px;">All of these must hold</div>
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text);margin-bottom:12px;font-weight:400;">
+        <input type="checkbox" id="lr1" style="margin-top:3px;"> Flight is for the purpose of flying the owner — not a charter flight
+      </label>
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text);margin-bottom:12px;font-weight:400;">
+        <input type="checkbox" id="lr2" style="margin-top:3px;"> Crew have had at least 18h off duty before starting the long-range duty
+      </label>
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text);margin-bottom:12px;font-weight:400;">
+        <input type="checkbox" id="lr3" style="margin-top:3px;"> The duty immediately before it ended before 20:00 local, followed by a minimum 18h off including a local night
+      </label>
+      <label style="display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--text);margin-bottom:0;font-weight:400;">
+        <input type="checkbox" id="lr4" style="margin-top:3px;"> Commander's discretion for this duty will be capped at 2h, not the usual 3h
+      </label>
+    </div>
+
+    <div class="grid2">
+      <div class="field"><label>Such duties already flown in trailing 28 days</label><input type="number" id="lrCount" value="0" min="0" step="1"></div>
+      <div class="field"><label>Cumulative duty hours, trailing 28 days</label><input type="number" id="lrHours" value="0" min="0" step="0.5"></div>
+    </div>
+
+    <div class="result" id="longrange-result"></div>
+  </section>
+
+  <!-- ===================== TAB 5: REFERENCE ===================== -->
+  <section class="panel" id="panel-reference">
+    <h2 class="section-title">Reference</h2>
+    <p class="section-desc">Quick lookup — definitions and clause map from OMA Section 7.5.</p>
+
+    <div class="card">
+      <div style="font-weight:600;margin-bottom:10px;">What changed vs. the 2021 edition (Issue 1/Rev 11)</div>
+      <ul class="changelog" style="padding-left:18px;margin:0;">
+        <li><strong>Rest accommodation floor:</strong> 9h → <strong>8h</strong> (7.5.12, 7.5.15)</li>
+        <li><strong>1-hour rest reduction trigger:</strong> previously only when earned rest was exactly 10h; now applies whenever earned rest is <strong>at least 10h</strong></li>
+        <li><strong>7.5.15 PIC discretion to reduce rest:</strong> rewritten from a flat 9h floor into a formal, documented 11-factor fatigue risk assessment, monitored by NPFO/NPGO; floor is now 8h accommodation + actual transport time</li>
+        <li><strong>7.5.16 reporting timing</strong> made explicit: exceedance reports immediately after the flight; rest-reduction reports before the next flight</li>
+        <li><strong>7.5.9.1 long-range table:</strong> a sector over 11h when not acclimatised was previously "Not Applicable" — now permitted, counted as 3 sectors</li>
+      </ul>
+      <div class="hint" style="margin-top:10px;">Everything else — Table A/B values, split duty, in-flight relief, the 65/105/190/2000-hour duty limits, 100h/900h flight-time limits, and the days-off pattern — is unchanged.</div>
+    </div>
+
+    <table class="ref">
+      <tr><th>Clause</th><th>Covers</th></tr>
+      <tr><td>7.5.2</td><td>Definitions (acclimatised, local night, days off, etc.)</td></tr>
+      <tr><td>7.5.8.2 / .3</td><td>Table A (acclimatised) / Table B (not acclimatised)</td></tr>
+      <tr><td>7.5.9 / 7.5.9.1</td><td>Two-pilot long sector (&gt;9h) adjustment / owner-flight exception</td></tr>
+      <tr><td>7.5.10</td><td>Extension by in-flight relief</td></tr>
+      <tr><td>7.5.11</td><td>Extension by split duty</td></tr>
+      <tr><td>7.5.12</td><td>Minimum rest period</td></tr>
+      <tr><td>7.5.13</td><td>OCC planned FTL variation (+1h max)</td></tr>
+      <tr><td>7.5.14</td><td>PIC discretion to extend FDP (+3h max)</td></tr>
+      <tr><td>7.5.15 / .16</td><td>PIC discretion to reduce rest / reporting</td></tr>
+      <tr><td>7.5.17</td><td>Days off pattern</td></tr>
+      <tr><td>7.5.18</td><td>Absolute flight-time limits (GAR 91.1215)</td></tr>
+      <tr><td>7.5.19</td><td>Cumulative duty hours</td></tr>
+      <tr><td>7.5.22</td><td>Non-company flying (&lt;1,570kg MTOW, non-commercial, or NP Flight Ops authorised)</td></tr>
+    </table>
+
+    <dl class="gloss">
+      <dt>Acclimatised</dt>
+      <dd>3 consecutive local nights on the ground in a time zone ≤2h wide with uninterrupted sleep. Stays acclimatised until a duty finishes somewhere local time differs by more than 2h from departure.</dd>
+      <dt>Local night</dt>
+      <dd>8 hours falling between 2200 and 0800 local time.</dd>
+      <dt>Days off</dt>
+      <dd>A single day off = 2 local nights, minimum 34 hours. Consecutive days off add a further local night each.</dd>
+      <dt>Sector</dt>
+      <dd>From an aircraft first moving under its own power to coming to rest after landing, at the parking position.</dd>
+      <dt>Split duty</dt>
+      <dd>An FDP of two or more sectors separated by less than a minimum rest period.</dd>
+      <dt>Suitable accommodation</dt>
+      <dd>A well-furnished bedroom with control over noise, ventilation, light, and temperature.</dd>
+    </dl>
+  </section>
+
+  <footer class="foot">
+    Sources: JCC Part-NCC OMA Section 7.5 (2026 I2R19) and JCC CAT/AOC OMA Section 7. Check with Flight Operations that the applicable manual revision remains current before operational use.
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  // ---------- Tab navigation ----------
+  const tabBtns = document.querySelectorAll('#tabs button');
+  tabBtns.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      tabBtns.forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+      document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---------- Generic segmented control helper ----------
+  function seg(id, onChange){
+    const el = document.getElementById(id);
+    const btns = el.querySelectorAll('button');
+    btns.forEach(b=>{
+      b.addEventListener('click',()=>{
+        btns.forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        onChange(b.dataset.val);
+      });
+    });
+    return ()=> el.querySelector('button.active').dataset.val;
+  }
+
+  function hhmm(h){
+    if(h===null||h===undefined||isNaN(h)) return '—';
+    const sign = h<0 ? '-':'';
+    h = Math.abs(h);
+    const hh = Math.floor(h+1e-9);
+    const mm = Math.round((h-hh)*60);
+    return sign+hh+':'+String(mm).padStart(2,'0');
+  }
+
+  // ================= FDP TAB =================
+  const TABLE_A = [
+    {label:'0600–0659', test:m=>m>=360&&m<=419, vals:[15,14.25,13.5,12.75,12,11.5,11,11]},
+    {label:'0700–1259', test:m=>m>=420&&m<=779, vals:[16,15.25,14.5,13.75,13,12.5,12,11.5]},
+    {label:'1300–1759', test:m=>m>=780&&m<=1079, vals:[15,14.25,13.5,12.75,12,11.5,11,11]},
+    {label:'1800–2159', test:m=>m>=1080&&m<=1319, vals:[14,13.25,12.5,11.75,11,11,11,11]},
+    {label:'2200–0559', test:m=>m>=1320||m<360, vals:[13,12.25,11.5,11,11,11,11,11]},
+  ];
+  const TABLE_B = [
+    {label:'Preceding rest ≤18h or >30h', vals:[15,14.25,13.5,12.75,12,11.25,11]},
+    {label:'Preceding rest 18h–30h',       vals:[13.5,13,12.5,11.75,11,11,11]},
+  ];
+  const CAT_TABLE_A = [
+    {label:'0600–0659', test:m=>m>=360&&m<=419, vals:[13,12.25,11.5,10.75,10,9.5,9,9]},
+    {label:'0700–1259', test:m=>m>=420&&m<=779, vals:[14,13.25,12.5,11.75,11,10.5,10,9.5]},
+    {label:'1300–1759', test:m=>m>=780&&m<=1079, vals:[13,12.25,11.5,10.75,10,9.5,9,9]},
+    {label:'1800–2159', test:m=>m>=1080&&m<=1319, vals:[12,11.25,10.5,9.75,9,9,9,9]},
+    {label:'2200–0559', test:m=>m>=1320||m<360, vals:[11,10.25,9.5,9,9,9,9,9]},
+  ];
+  const CAT_TABLE_B = [
+    {label:'Preceding rest ≤18h or >30h', vals:[13,12.25,11.5,10.75,10,9.25,9]},
+    {label:'Preceding rest 18h–30h',       vals:[11.5,11,10.5,9.75,9,9,9]},
+  ];
+
+  let ruleSet = 'NCC';
+  seg('seg-ruleset', v=>{
+    ruleSet=v;
+    document.getElementById('ruleset-sub').innerHTML = v==='NCC'
+      ? 'NCC — <strong>2026_JCC_PART_NCC_OMA_I2R19</strong> (Issue 2, Rev 19 — 29 June 2026).'
+      : 'CAT/AOC — <strong>OMA CAT</strong>, Issue 2, Revision 15, 29 June 2026, Chapter 7.';
+    document.getElementById('ruleset-hint').textContent = v==='NCC' ? 'Part-NCC OMA Section 7.5' : 'OMA CAT, Issue 2, Revision 15, 29 June 2026, Chapter 7';
+    document.getElementById('longrange-summary').textContent = v==='NCC' ? 'Long-sector adjustment — OMA 7.5.9' : 'Long-sector adjustment — OMA 7.15';
+    document.getElementById('cat-ops-helper').style.display = v==='CAT' ? '' : 'none';
+    document.getElementById('tab-longrange').style.display = v==='NCC' ? '' : 'none';
+    document.getElementById('catAnnualOffField').style.display = v==='CAT' ? '' : 'none';
+    if(v==='CAT' && document.getElementById('panel-longrange').classList.contains('active')){
+      document.querySelector('[data-tab="fdp"]').click();
+    }
+    document.getElementById('longSectorHint').textContent = v==='NCC' ? 'NCC long-sector penalty begins at 09:01.' : 'CAT/AOC long-sector penalty begins above 07:00.';
+    document.getElementById('hint-sectors').textContent = acclimState==='acclim' ? 'Table A caps at "8 or more."' : 'Table B caps at "7 or more."';
+    document.getElementById('splitHint').textContent = v==='NCC' ? 'NCC: qualifying split rest excludes at least 20 minutes of immediate post/pre-flight duties.' : 'CAT/AOC: qualifying split rest excludes at least 30 minutes of immediate post/pre-flight duties.';
+    document.getElementById('longDutyRestLabel').textContent = 'Did the preceding duty (incl. any positioning) exceed '+(v==='NCC'?'20':'18')+' hours?';
+    renderFDP(); renderRest(); renderPicDiscretion(); renderCumulative();
+  });
+
+  let acclimState = 'acclim';
+  seg('seg-acclim', v=>{
+    acclimState = v;
+    document.getElementById('field-precedingrest').style.display = v==='acclim' ? 'none' : '';
+    document.getElementById('hint-sectors').textContent = v==='acclim'
+      ? 'Table A caps at "8 or more."'
+      : 'Table B caps at "7 or more."';
+    renderFDP();
+  });
+
+  let longSectorEnabled=false;
+  seg('seg-longsector',v=>{
+    longSectorEnabled=v==='yes';
+    document.getElementById('longrange-helper').style.display=longSectorEnabled?'':'none';
+    if(!longSectorEnabled){
+      document.getElementById('longSectorTime').value='00:00';
+      document.getElementById('longrange-helper').removeAttribute('open');
+    } else if(document.getElementById('longSectorTime').value==='00:00'){
+      document.getElementById('longSectorTime').value=ruleSet==='NCC'?'09:01':'07:01';
+    }
+    renderFDP();
+  });
+
+  let extMethod = 'none';
+  seg('seg-ext', v=>{
+    extMethod = v;
+    document.getElementById('ext-split').style.display = v==='split' ? '' : 'none';
+    document.getElementById('ext-relief').style.display = v==='relief' ? '' : 'none';
+    renderFDP();
+  });
+
+  let reliefType = 'jump';
+  seg('seg-relieftype', v=>{ reliefType=v; document.getElementById('reliefRestField').style.display=v==='jump'?'none':''; renderFDP(); });
+
+  ['startTime','reportDate','precedingRest','sectors','splitStart','splitEnd','reliefRest','longSectorTime','actualReport','actualFinish'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', renderFDP);
+  });
+  document.getElementById('additionalPilot').addEventListener('change',renderFDP);
+  ['useDelayedReport','useStandby','useInterruptedRest'].forEach(id=>{
+    document.getElementById(id).addEventListener('change',()=>{
+      document.getElementById('delayedReportFields').style.display=document.getElementById('useDelayedReport').checked?'':'none';
+      document.getElementById('standbyFields').style.display=document.getElementById('useStandby').checked?'':'none';
+      document.getElementById('interruptedRestFields').style.display=document.getElementById('useInterruptedRest').checked?'':'none';
+      renderFDP();
+    });
+  });
+  ['delayedOriginal','delayedActual','delayUndisturbed','standbyStart','standbyCallout','disturbanceTime','leaveRestTime'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.addEventListener(el.type==='checkbox'?'change':'input',renderFDP);
+  });
+
+  document.getElementById('reportDate').value = new Date().toISOString().slice(0,10);
+
+  function timeToMinutes(t){
+    if(!t) return 0;
+    const [hh,mm] = t.split(':').map(Number);
+    return (hh||0)*60+(mm||0);
+  }
+
+  function minutesDiff(start,end){
+    let d=timeToMinutes(end)-timeToMinutes(start);
+    if(d<0)d+=1440;
+    return d;
+  }
+
+  function tableLimitFor(reportTime,sectors){
+    const minutes=timeToMinutes(reportTime);
+    if(acclimState==='acclim'){
+      const table=ruleSet==='NCC'?TABLE_A:CAT_TABLE_A;
+      const band=table.find(b=>b.test(minutes))||table[4];
+      const idx=Math.min(Math.max(sectors,1),8)-1;
+      return {hours:band.vals[idx],line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table A · '+band.label};
+    }
+    const rest=parseFloat(document.getElementById('precedingRest').value||'0');
+    if(Math.abs(rest-30)<1e-9){
+      return {hours:null,review:true,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · exactly 30h preceding rest requires review'};
+    }
+    const table=ruleSet==='NCC'?TABLE_B:CAT_TABLE_B;
+    const row=(rest<=18||rest>30)?table[0]:table[1];
+    const idx=Math.min(Math.max(sectors,1),7)-1;
+    return {hours:row.vals[idx],review:false,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · '+row.label};
+  }
+
+  function longSectorHours(){
+    const t=document.getElementById('longSectorTime').value||'00:00';
+    const [h,m]=t.split(':').map(Number); return (h||0)+(m||0)/60;
+  }
+  function modifiedSectorCount(actual){
+    const h=longSectorHours(), acc=acclimState==='acclim';
+    const extraPilot=document.getElementById('additionalPilot').checked;
+    let mod=actual, text='';
+    if(extraPilot && h>(ruleSet==='NCC'?9:7)){
+      return {notApplicable:false,sectors:actual,text:'Long-sector penalty removed — additional current type-rated pilot carried; use actual sectors planned.'};
+    }
+    if(ruleSet==='NCC'){
+      if(h<=9){ text='No long-sector penalty.'; }
+      else if(h<=11){ mod=actual-1+(acc?1:2); text='09:01–11:00 → modified as '+(acc?'1':'2')+' sector(s).'; }
+      else { mod=actual-1+(acc?2:3); text='>11:00 → modified as '+(acc?'2':'3')+' sector(s).'; }
+    } else {
+      if(h<=7){ text='No long-sector penalty.'; }
+      else if(h<=9){ mod=actual-1+(acc?2:4); text='>07:00–09:00 → modified as '+(acc?'2':'4')+' sector(s).'; }
+      else if(h<=11){ mod=actual-1+(acc?3:4); text='>09:00–11:00 → modified as '+(acc?'3':'4')+' sector(s).'; }
+      else if(acc){ mod=actual-1+4; text='>11:00 → modified as 4 sectors.'; }
+      else { return {notApplicable:true, sectors:actual, text:'>11:00 is not applicable for a two-pilot non-acclimatised CAT/AOC crew.'}; }
+    }
+    return {notApplicable:false,sectors:mod,text};
+  }
+
+  function catOperationalAdjustment(lookupSectors, normalReport){
+    if(ruleSet!=='CAT') return {reportForTable:normalReport, fdpStartTime:normalReport, reduction:0, preFdpCount:0, illegal:false, notes:[]};
+
+    let reportForTable=normalReport, fdpStartTime=normalReport, reduction=0, preFdpCount=0, illegal=false;
+    const notes=[];
+
+    if(document.getElementById('useDelayedReport').checked){
+      const orig=document.getElementById('delayedOriginal').value||normalReport;
+      const actual=document.getElementById('delayedActual').value||normalReport;
+      const delayMin=minutesDiff(orig,actual);
+      if(delayMin>=600 && document.getElementById('delayUndisturbed').checked){
+        reportForTable=actual; fdpStartTime=actual;
+        notes.push('Delayed report ≥10h with no further Company disturbance: delay qualifies as rest; actual report used as new FDP start.');
+        document.getElementById('delayedReportResult').textContent='≥10h undisturbed delay: treated as rest; actual report becomes the new FDP start.';
+      } else if(delayMin<240){
+        reportForTable=orig; fdpStartTime=actual;
+        notes.push('Delayed report <4h: maximum FDP based on original report; actual FDP starts at actual report.');
+        document.getElementById('delayedReportResult').textContent='Delay '+hhmm(delayMin/60)+': limit from original report; actual FDP starts at actual report.';
+      } else {
+        const a=tableLimitFor(orig,lookupSectors), b=tableLimitFor(actual,lookupSectors);
+        if(a.review||b.review){illegal=true;notes.push('Table B exactly 30h preceding-rest boundary requires operational review.');}
+        else reportForTable=a.hours<=b.hours?orig:actual;
+        const start=(timeToMinutes(orig)+240)%1440;
+        fdpStartTime=String(Math.floor(start/60)).padStart(2,'0')+':'+String(start%60).padStart(2,'0');
+        notes.push('Delayed report ≥4h: more limiting planned/actual report band used; FDP starts 4h after original report.');
+        document.getElementById('delayedReportResult').textContent='Delay '+hhmm(delayMin/60)+': use more limiting report band; FDP start is 4h after original report.';
+      }
+    } else {
+      document.getElementById('delayedReportResult').textContent='';
+    }
+
+    if(document.getElementById('useStandby').checked){
+      const sb=document.getElementById('standbyStart').value;
+      const call=document.getElementById('standbyCallout').value||fdpStartTime;
+      const standbyMin=minutesDiff(sb,call);
+      if(standbyMin>720){illegal=true;notes.push('Standby exceeds 12h maximum.');}
+      const sbLimit=tableLimitFor(sb,lookupSectors);
+      const callLimit=tableLimitFor(call,lookupSectors);
+      if(sbLimit.review||callLimit.review){illegal=true;notes.push('Table B exactly 30h preceding-rest boundary requires operational review.');}
+      else if(callLimit.hours<sbLimit.hours) reportForTable=call;
+      else reportForTable=sb;
+      fdpStartTime=call;
+      if(standbyMin>=360){
+        reduction=(standbyMin-360)/60;
+        notes.push('Standby callout after 6h: allowable FDP reduced by standby worked over 6h.');
+      } else {
+        notes.push('Standby callout before 6h: no standby-over-6 FDP reduction.');
+      }
+      document.getElementById('standbyResult').textContent=
+        'Standby '+hhmm(standbyMin/60)+(standbyMin>720?' — exceeds 12h maximum.':(reduction>0?' — FDP reduction '+hhmm(reduction)+'.':' — no FDP reduction.'));
+    } else {
+      document.getElementById('standbyResult').textContent='';
+    }
+
+    if(document.getElementById('useInterruptedRest').checked){
+      const d=document.getElementById('disturbanceTime').value;
+      const leave=document.getElementById('leaveRestTime').value;
+      const dist=timeToMinutes(d), inWindow=(dist>=1380||dist<420);
+      const elapsed=minutesDiff(d,leave);
+      if(inWindow && elapsed>60){
+        preFdpCount=(elapsed-60)/60;
+        notes.push('Interrupted rest: '+hhmm(preFdpCount)+' counts as part of subsequent FDP.');
+        document.getElementById('interruptedRestResult').textContent=hhmm(preFdpCount)+' counts toward the subsequent FDP.';
+      } else {
+        document.getElementById('interruptedRestResult').textContent=inWindow?'Disturbance is within 1h of leaving rest: no additional FDP count.':'Disturbance is outside 2300–0700: interrupted-rest formula not applied.';
+      }
+    } else {
+      document.getElementById('interruptedRestResult').textContent='';
+    }
+
+    return {reportForTable,fdpStartTime,reduction,preFdpCount,illegal,notes};
+  }
+
+  function renderFDP(){
+    const sectorsInput = parseInt(document.getElementById('sectors').value||'1',10);
+    const longInfo = modifiedSectorCount(sectorsInput);
+    const lookupSectors = longInfo.sectors;
+    document.getElementById('longsector-result').innerHTML = '<div class="note">'+longInfo.text+(lookupSectors!==sectorsInput && !longInfo.notApplicable ? '<br><strong>Table lookup sectors: '+lookupSectors+'</strong>' : '')+'</div>';
+
+    const nominalReport=document.getElementById('actualReport').value || document.getElementById('startTime').value;
+    const catAdj=catOperationalAdjustment(lookupSectors,nominalReport);
+    const effectiveReport=catAdj.reportForTable;
+    const tl=tableLimitFor(effectiveReport,lookupSectors);
+    if(tl.review){
+      const box=document.getElementById('fdp-result');
+      box.classList.remove('illegal');
+      box.innerHTML='<div class="headline"><div class="num">REVIEW REQUIRED</div><div class="lbl">Exactly 30:00 preceding rest is not assigned silently because Table B says “up to 18 or over 30” and “between 18 and 30”. Confirm the Company interpretation before use.</div></div>';
+      return;
+    }
+    let tableHours=Math.max(0,tl.hours-catAdj.reduction-catAdj.preFdpCount);
+    let capLabel=lookupSectors>=(acclimState==='acclim'?8:7)?(acclimState==='acclim'?'8+':'7+'):String(lookupSectors);
+    let tableLine=tl.line+' · '+capLabel+' sector(s)';
+
+
+    let ext = 0, extLine = '', capNote = '', splitLine = '';
+    if(extMethod==='split'){
+      const sMin = timeToMinutes(document.getElementById('splitStart').value);
+      const eMin = timeToMinutes(document.getElementById('splitEnd').value);
+      let gapMin = eMin - sMin;
+      if(gapMin < 0) gapMin += 1440;
+      const r = gapMin/60;
+      splitLine = 'Gap between start and end of split: '+hhmm(r)+' rest';
+      if(r<3){ ext=0; extLine='Split duty rest <3h → no extension'; }
+      else if(r<=10){ ext=r/2; extLine='Split duty · '+hhmm(r)+' rest → +'+hhmm(ext); }
+      else { ext=5; extLine='Split duty rest >10h is outside the 3–10h table — treat as the 10h max (+5:00) or confirm with ops.'; }
+    } else if(extMethod==='relief'){
+      const pilotOK=document.getElementById('additionalPilot').checked;
+      const r = parseFloat(document.getElementById('reliefRest').value||'0');
+      if(!pilotOK){ ext=0; extLine='Additional current type-rated pilot not confirmed — no relief credit applied'; }
+      else if(reliefType==='jump'){ ext=0; extLine='Jump seat — sector penalty removed; no in-flight-rest FDP credit'; }
+      else if(r<3){ ext=0; extLine='Qualifying in-flight rest <3h → no FDP extension'; }
+      else if(reliefType==='bunk'){ const cap=ruleSet==='NCC'?20:18; ext=r/2; capNote='cap: FDP ≤ '+hhmm(cap); extLine='Bunk rest · '+r+'h → +'+hhmm(ext)+' ('+capNote+')'; }
+      else { const cap=ruleSet==='NCC'?18:15; ext=r/3; capNote='cap: FDP ≤ '+hhmm(cap); extLine='Reclining-seat rest · '+r+'h → +'+hhmm(ext)+' ('+capNote+')'; }
+    }
+
+    if(longInfo.notApplicable){
+      document.getElementById('fdp-result').innerHTML='<div class="headline"><div class="num" style="color:var(--red)">NOT APPLICABLE</div><div class="lbl">CAT/AOC TWO-PILOT NON-ACCLIMATISED LONG-SECTOR LIMIT</div></div><div class="note warn">'+longInfo.text+'</div>';
+      return;
+    }
+    if(catAdj.illegal){
+      document.getElementById('fdp-result').classList.add('illegal');
+      document.getElementById('fdp-result').innerHTML='<div class="headline"><div class="num">NOT LEGAL</div><div class="lbl">'+catAdj.notes.join(' ')+'</div></div>';
+      return;
+    }
+    let total = tableHours + ext;
+    let capped = false;
+    if(extMethod==='relief' && reliefType!=='jump' && document.getElementById('additionalPilot').checked){
+      const cap = reliefType==='bunk' ? (ruleSet==='NCC'?20:18) : (ruleSet==='NCC'?18:15);
+      if(total>cap){ total=cap; capped=true; }
+    }
+
+    if(selectedAirport){
+      const reportUtc=zonedLocalToUtc(document.getElementById('reportDate').value,catAdj.fdpStartTime || effectiveReport,selectedAirport.tz);
+      if(reportUtc){utcReportLabel=formatUTC(reportUtc);utcEndLabel=formatUTC(new Date(reportUtc.getTime()+total*3600000));}
+    } else {utcReportLabel='';utcEndLabel='';}
+
+    // Latest blocks-on (local) — start time + total FDP, wrapping past midnight
+    const startMinutes = timeToMinutes(catAdj.fdpStartTime || effectiveReport);
+    let blocksMinutesRaw = startMinutes + total*60;
+    const dayOffset = Math.floor(blocksMinutesRaw/1440);
+    const blocksMinutes = ((blocksMinutesRaw%1440)+1440)%1440;
+    const bh = Math.floor(blocksMinutes/60);
+    const bm = Math.round(blocksMinutes%60);
+    const blocksLabel = String(bh).padStart(2,'0')+':'+String(bm).padStart(2,'0')+(dayOffset>0?' (+'+dayOffset+'d)':'');
+
+    const actualReport=document.getElementById('actualReport').value;
+    const actualFinish=document.getElementById('actualFinish').value;
+    let actualFDP=null;
+    if(actualReport && actualFinish){
+      let d=timeToMinutes(actualFinish)-timeToMinutes(actualReport);
+      if(d<0)d+=1440;
+      actualFDP=d/60;
+    }
+    const minimumKnownFDP=longSectorHours()>0 ? longSectorHours()+1 : 0;
+    const intrinsicIllegal=minimumKnownFDP>total+1e-9;
+    const actualIllegal=actualFDP!==null && actualFDP>total+1e-9;
+    const illegal=intrinsicIllegal||actualIllegal;
+    let reason='';
+    if(intrinsicIllegal) reason='Minimum known FDP '+hhmm(minimumKnownFDP)+' (1:00 report + longest sector) exceeds maximum '+hhmm(total)+'.';
+    if(actualIllegal) reason+=(reason?' ':'')+'Actual FDP '+hhmm(actualFDP)+' exceeds maximum '+hhmm(total)+'.';
+
+    const box = document.getElementById('fdp-result');
+    box.classList.toggle('illegal',illegal);
+    box.innerHTML =
+      (illegal?'<div class="headline"><div class="num">NOT LEGAL</div><div class="lbl">'+reason+'</div></div>':'')+
+      '<div class="headline-row">'+
+        '<div class="item"><div class="num amber">'+hhmm(total)+'</div><div class="lbl">MAX FDP'+(capped?' (CAPPED)':'')+'</div></div>'+
+        '<div class="item"><div class="num teal">'+blocksLabel+'</div><div class="lbl">LATEST FDP END (LOCAL)</div></div>'+
+      '</div>'+
+      '<div class="row"><span class="k">Table limit</span><span class="v">'+hhmm(tableHours)+'</span></div>'+
+      '<div class="row"><span class="k">'+tableLine+'</span><span class="v"></span></div>'+
+      (actualFDP!==null ? '<div class="row"><span class="k">Actual report → finish</span><span class="v">'+hhmm(actualFDP)+'</span></div>' : '')+
+      (selectedAirport ? '<div class="row"><span class="k">Report location</span><span class="v">'+selectedAirport.icao+' / '+(selectedAirport.iata||'—')+' · '+selectedAirport.tz+'</span></div>' : '')+
+      (selectedAirport && utcReportLabel ? '<div class="row"><span class="k">Report time UTC</span><span class="v">'+utcReportLabel+'</span></div>' : '')+
+      (selectedAirport && utcEndLabel ? '<div class="row"><span class="k">Latest FDP end UTC</span><span class="v">'+utcEndLabel+'</span></div>' : '')+
+      (catAdj.notes.length ? '<div class="row"><span class="k">'+catAdj.notes.join(' · ')+'</span><span class="v"></span></div>' : '')+
+      (extMethod!=='none' ? '<div class="row"><span class="k">'+extLine+'</span><span class="v"></span></div>' : '')+
+      (extMethod==='split' ? '<div class="row"><span class="k">'+splitLine+'</span><span class="v"></span></div>' : '');
+    compactResultDetails(box);
+  }
+
+  function compactResultDetails(box, label='Reason & JCC OM-A Reference'){
+    if(!box) return;
+    const existing=box.querySelector('.result-details');
+    if(existing) return;
+    const rows=[...box.children].filter(el=>el.classList && el.classList.contains('row'));
+    if(!rows.length) return;
+    const details=document.createElement('details');
+    details.className='result-details';
+    const summary=document.createElement('summary');
+    summary.textContent=label;
+    const body=document.createElement('div');
+    body.className='detail-body';
+    rows.forEach(r=>body.appendChild(r));
+    details.appendChild(summary);
+    details.appendChild(body);
+    box.appendChild(details);
+  }
+
+  // ================= AIRPORT / TIME ZONE =================
+  let airports=[], selectedAirport=null, utcReportLabel='', utcEndLabel='';
+  const airportInput=document.getElementById('reportLocation');
+  const airportMatches=document.getElementById('airportMatches');
+  const airportStatus=document.getElementById('airportStatus');
+  let airportLoadPromise=null;
+
+  function loadAirports(){
+    if(airportLoadPromise)return airportLoadPromise;
+    airportStatus.textContent='Loading global airport database…';
+    airportLoadPromise=fetch('https://raw.githubusercontent.com/mwgg/Airports/master/airports.json')
+      .then(r=>{if(!r.ok)throw new Error('Airport database unavailable');return r.json()})
+      .then(data=>{
+        airports=Object.values(data).filter(a=>a&&a.icao&&a.tz);
+        airportStatus.textContent='Global airport database ready ('+airports.length.toLocaleString()+' airports).';
+        return airports;
+      }).catch(err=>{airportStatus.textContent='Airport database could not be loaded — '+err.message;return[]});
+    return airportLoadPromise;
+  }
+  function airportText(a){return [a.icao,a.iata,a.name,a.city,a.state,a.country].filter(Boolean).join(' ')}
+  function searchAirports(q){
+    q=(q||'').trim().toLowerCase();
+    if(q.length<2){airportMatches.style.display='none';return}
+    loadAirports().then(()=>{
+      // Always scan the full database for an exact ICAO/IATA code first.
+      // The previous early-exit logic could fill up on city/name partial matches
+      // before reaching a later exact four-letter ICAO entry.
+      const exactIcao=airports.filter(a=>a.icao && String(a.icao).toLowerCase()===q);
+      const exactIata=airports.filter(a=>a.iata && String(a.iata).toLowerCase()===q);
+
+      // ICAO is unambiguous at four characters: resolve it immediately.
+      if(q.length===4 && exactIcao.length===1){
+        selectAirport(exactIcao[0]);
+        return;
+      }
+
+      // Never auto-commit a 2- or 3-character match while the pilot may still
+      // be typing a four-character ICAO (e.g. LL -> LLB -> LLBG).
+      // Exact IATA remains ranked first in the suggestion list and is selected
+      // only when the pilot explicitly chooses/confirms it.
+
+      const exactText=[],starts=[],contains=[];
+      for(const a of airports){
+        const vals=[a.icao,a.iata,a.name,a.city].filter(Boolean).map(x=>String(x).toLowerCase());
+        if(vals.some(v=>v===q)) exactText.push(a);
+        else if(vals.some(v=>v.startsWith(q))) starts.push(a);
+        else if(vals.some(v=>v.includes(q))) contains.push(a);
+        if(exactText.length+starts.length+contains.length>=120) break;
+      }
+      const preferred=[...exactIcao,...exactIata];
+      const found=[...preferred,...exactText,...starts,...contains]
+        .filter((a,i,arr)=>arr.indexOf(a)===i).slice(0,12);
+      airportMatches.innerHTML=found.map((a,i)=>'<option value="'+i+'">'+a.icao+' / '+(a.iata||'—')+' — '+a.name+' — '+(a.city||'')+'</option>').join('');
+      airportMatches._matches=found;
+      airportMatches.style.display=found.length?'':'none';
+      // Suggestions do not alter the typed identifier until explicitly chosen.
+    });
+  }
+  function selectAirport(a){
+    selectedAirport=a;
+    airportInput.value=(a.icao||'')+(a.iata?' / '+a.iata:'')+' — '+a.name;
+    airportMatches.style.display='none';
+    airportStatus.textContent=(a.city||'')+(a.city?' · ':'')+(a.country||'')+' · '+a.tz;
+    renderFDP();
+  }
+  airportInput.addEventListener('focus',loadAirports);
+  airportInput.addEventListener('input',()=>{selectedAirport=null;searchAirports(airportInput.value);});
+  airportMatches.addEventListener('change',()=>{const a=airportMatches._matches?.[Number(airportMatches.value)];if(a)selectAirport(a)});
+
+  function tzOffsetMs(date,tz){
+    const p=new Intl.DateTimeFormat('en-GB',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(date);
+    const v={};p.forEach(x=>{if(x.type!=='literal')v[x.type]=x.value});
+    const asUTC=Date.UTC(+v.year,+v.month-1,+v.day,+v.hour,+v.minute,+v.second);
+    return asUTC-date.getTime();
+  }
+  function zonedLocalToUtc(dateStr,timeStr,tz){
+    if(!dateStr||!timeStr||!tz)return null;
+    const [y,m,d]=dateStr.split('-').map(Number),[hh,mm]=timeStr.split(':').map(Number);
+    let guess=new Date(Date.UTC(y,m-1,d,hh,mm,0));
+    for(let i=0;i<3;i++)guess=new Date(Date.UTC(y,m-1,d,hh,mm,0)-tzOffsetMs(guess,tz));
+    return guess;
+  }
+  function formatUTC(d){return d?d.toISOString().slice(0,16).replace('T',' ')+'Z':'';}
+
+  // Update UTC labels inside renderFDP.
+  const _oldRenderFDP=renderFDP;
+  renderFDP=function(){
+    utcReportLabel='';utcEndLabel='';
+    if(selectedAirport){
+      const reportUtc=zonedLocalToUtc(document.getElementById('reportDate').value,document.getElementById('startTime').value,selectedAirport.tz);
+      if(reportUtc){
+        utcReportLabel=formatUTC(reportUtc);
+        // provisional; recomputed after max FDP result using the displayed total is handled in result below
+      }
+    }
+    return _oldRenderFDP();
+  };
+
+  // ================= REST TAB =================
+  let awayBase = true, accomProvided = true, over20 = false;
+  seg('seg-awaybase', v=>{ awayBase = v==='yes'; document.getElementById('awaybase-fields').style.display = awayBase?'':'none'; renderRest(); });
+  seg('seg-accom', v=>{ accomProvided = v==='yes'; renderRest(); });
+  seg('seg-over20', v=>{ over20 = v==='yes'; renderRest(); });
+  ['precedingDuty','travelMin'].forEach(id=> document.getElementById(id).addEventListener('input', renderRest));
+
+  function renderRest(){
+    const duty = parseFloat(document.getElementById('precedingDuty').value||'0');
+    const REST_BASE = ruleSet==='NCC'?10:12;
+    let base = Math.max(duty,REST_BASE);
+    let reduced = base;
+    const ACCOM_FLOOR = ruleSet==='NCC'?8:10;
+
+    let reducedApplied = false;
+    if(awayBase && accomProvided && ((ruleSet==='NCC' && base>=10) || (ruleSet==='CAT' && Math.abs(base-12)<1e-9))){
+      reduced = Math.max(base-1, ACCOM_FLOOR);
+      reducedApplied = true;
+    }
+
+    let travelExtra = 0;
+    if(awayBase){
+      const travelEachWay = parseFloat(document.getElementById('travelMin').value||'0')/60;
+      const totalTravel = travelEachWay*2;
+      travelExtra = Math.max(0, totalTravel-1);
+    }
+
+    const finalRest = reduced + travelExtra;
+
+    const box = document.getElementById('rest-result');
+    box.innerHTML =
+      '<div class="headline"><div class="num">'+hhmm(finalRest)+'</div><div class="lbl">MINIMUM REST REQUIRED</div></div>'+
+      '<div class="row"><span class="k">Base (max of preceding duty, or '+REST_BASE+'h)</span><span class="v">'+hhmm(base)+'</span></div>'+
+      (reducedApplied ? '<div class="row"><span class="k">−1h reduction (away, accommodation provided, floor '+ACCOM_FLOOR+'h)</span><span class="v">'+hhmm(reduced)+'</span></div>' : '')+
+      (travelExtra>0 ? '<div class="row"><span class="k">+ travel time over 1h combined</span><span class="v">+'+hhmm(travelExtra)+'</span></div>' : '')+
+      (over20 ? '<div class="row"><span class="k">Duty incl. positioning &gt;'+(ruleSet==='NCC'?20:18)+'h</span><span class="v"><span class="status warn">Local night required</span></span></div>' : '');
+    compactResultDetails(box);
+  }
+
+  ['picReducedRest','picTransport'].forEach(id=> document.getElementById(id) && document.getElementById(id).addEventListener('input', renderPicDiscretion));
+  function renderPicDiscretion(){
+    const proposed = parseFloat(document.getElementById('picReducedRest').value||'0');
+    const transport = parseFloat(document.getElementById('picTransport').value||'0');
+    const accommodationFloor = ruleSet==='NCC'?8:10;
+    const floor = accommodationFloor + transport;
+    const ok = proposed >= floor;
+    const box = document.getElementById('pic-discretion-result');
+    box.innerHTML =
+      '<div class="result" style="margin-top:0;">'+
+      '<div class="row"><span class="k">Floor ('+accommodationFloor+'h accommodation + transport time)</span><span class="v">'+hhmm(floor)+'</span></div>'+
+      '<div class="row"><span class="k">Proposed rest</span><span class="v">'+hhmm(proposed)+'</span></div>'+
+      '<div class="row"><span class="k">Status</span><span class="v"><span class="status '+(ok?'ok':'bad')+'">'+(ok?(ruleSet==='NCC'?'Permitted if risk-assessed & documented':'Meets accommodation floor — CAT reduced-rest restrictions still apply'):'Below the absolute floor — not permitted')+'</span></span></div>'+
+      '</div>';
+  }
+
+  // ================= CUMULATIVE TAB =================
+  const LIMITS_NCC = {d7:65, d14:105, d28:190, d365:2000, f28:100, f365:900};
+  const LIMITS_CAT = {d7:55, d14:95, d28:190, d365:2000, f28:100, f365:900};
+  let consecOffOk = true;
+  seg('seg-consecoff', v=>{ consecOffOk = v==='yes'; renderCumulative(); });
+  ['d7','d14','d28','d365','f28','f365','consecDuty','daysOff28','daysOff84','daysOffYear'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', renderCumulative);
+  });
+
+  function statusFor(used, limit){
+    const pct = used/limit;
+    if(used>=limit) return 'bad';
+    if(pct>=0.9) return 'warn';
+    return 'ok';
+  }
+
+  function renderCumulative(){
+    const vals = {};
+    ['d7','d14','d28','d365','f28','f365'].forEach(k=> vals[k]=parseFloat(document.getElementById(k).value||'0'));
+    const consecDuty = parseInt(document.getElementById('consecDuty').value||'0',10);
+    const daysOff28 = parseInt(document.getElementById('daysOff28').value||'0',10);
+    const daysOff84 = parseInt(document.getElementById('daysOff84').value||'0',10);
+    const daysOffYear = parseInt(document.getElementById('daysOffYear').value||'0',10);
+
+    function line(label, used, limit, unit){
+      const st = statusFor(used, limit);
+      const remaining = Math.max(limit-used,0);
+      const msg = st==='bad' ? 'Limit reached/exceeded' : (remaining.toFixed(1).replace(/\.0$/,'')+unit+' remaining');
+      return '<div class="row"><span class="k">'+label+'</span><span class="v"><span class="status '+st+'">'+msg+'</span></span></div>';
+    }
+
+    const L = ruleSet==='NCC'?LIMITS_NCC:LIMITS_CAT;
+    let rows = '';
+    rows += line('Duty · '+L.d7+'h / 7 days', vals.d7, L.d7, 'h');
+    rows += line('Duty · '+L.d14+'h / 14 days', vals.d14, L.d14, 'h');
+    rows += line('Duty · '+L.d28+'h / 28 days', vals.d28, L.d28, 'h');
+    rows += line('Duty · '+L.d365+'h / 12 months', vals.d365, L.d365, 'h');
+    rows += line('Flight time · '+L.f28+'h / 28 days', vals.f28, L.f28, 'h');
+    rows += line('Flight time · '+L.f365+'h / 12 months', vals.f365, L.f365, 'h');
+
+    const consecSt = consecDuty>=7 ? 'bad' : (consecDuty>=6?'warn':'ok');
+    rows += '<div class="row"><span class="k">Consecutive duty days (max 7, may position on day 8)</span><span class="v"><span class="status '+consecSt+'">'+consecDuty+' day(s)'+(consecDuty>=7?' — day off due':'')+'</span></span></div>';
+
+    const off28St = daysOff28>=7 ? 'ok' : 'bad';
+    rows += '<div class="row"><span class="k">Days off, trailing 28 days (min 7)</span><span class="v"><span class="status '+off28St+'">'+daysOff28+'</span></span></div>';
+
+    const off84St = daysOff84>=24 ? 'ok' : 'bad';
+    rows += '<div class="row"><span class="k">Days off, trailing 84 days (avg 8/28d → min 24)</span><span class="v"><span class="status '+off84St+'">'+daysOff84+'</span></span></div>';
+
+    const consecOffSt = consecOffOk ? 'ok' : 'bad';
+    rows += '<div class="row"><span class="k">2 consecutive days off within last '+(ruleSet==='NCC'?16:14)+' days</span><span class="v"><span class="status '+consecOffSt+'">'+(consecOffOk?'Yes':'Overdue')+'</span></span></div>';
+    if(ruleSet==='CAT'){
+      const yst=daysOffYear>=96?'ok':'bad';
+      rows += '<div class="row"><span class="k">Calendar-year days free of duty (min 96)</span><span class="v"><span class="status '+yst+'">'+daysOffYear+'</span></span></div>';
+    }
+
+    document.getElementById('cumulative-result').innerHTML = rows;
+    compactResultDetails(document.getElementById('cumulative-result'));
+  }
+
+  // ================= LONG RANGE TAB =================
+  ['lr1','lr2','lr3','lr4','lrCount','lrHours'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', renderLongRange);
+    document.getElementById(id).addEventListener('change', renderLongRange);
+  });
+  function renderLongRange(){
+    const checks = ['lr1','lr2','lr3','lr4'].map(id=>document.getElementById(id).checked);
+    const allChecked = checks.every(Boolean);
+    const count = parseInt(document.getElementById('lrCount').value||'0',10);
+    const hours = parseFloat(document.getElementById('lrHours').value||'0');
+
+    const countSt = count>=4 ? 'bad' : (count===3?'warn':'ok');
+    const hoursSt = hours>=170 ? 'bad' : (hours>=153?'warn':'ok');
+
+    document.getElementById('longrange-result').innerHTML =
+      '<div class="row"><span class="k">Conditions met</span><span class="v"><span class="status '+(allChecked?'ok':'bad')+'">'+(allChecked?'All 4 confirmed':'Incomplete')+'</span></span></div>'+
+      '<div class="row"><span class="k">Duties this type, trailing 28 days (max 4)</span><span class="v"><span class="status '+countSt+'">'+count+'</span></span></div>'+
+      '<div class="row"><span class="k">Cumulative duty, trailing 28 days (max 170h)</span><span class="v"><span class="status '+hoursSt+'">'+hours+'h</span></span></div>';
+    compactResultDetails(document.getElementById('longrange-result'));
+  }
+
+  function resetCalculator(){
+    const click=(sel)=>document.querySelector(sel)?.click();
+    const set=(id,val,event='input')=>{
+      const el=document.getElementById(id); if(!el)return;
+      if(el.type==='checkbox') el.checked=!!val; else el.value=val;
+      el.dispatchEvent(new Event(event,{bubbles:true}));
+    };
+
+    click('#seg-ruleset button[data-val="NCC"]');
+    click('#seg-acclim button[data-val="acclim"]');
+    click('#seg-ext button[data-val="none"]');
+    click('#seg-longsector button[data-val="no"]');
+    click('#seg-relieftype button[data-val="jump"]');
+    click('#seg-awaybase button[data-val="yes"]');
+    click('#seg-accom button[data-val="yes"]');
+    click('#seg-over20 button[data-val="no"]');
+    click('#seg-consecoff button[data-val="yes"]');
+
+    set('startTime','09:00');
+    set('reportDate',new Date().toISOString().slice(0,10));
+    set('reportLocation','');
+    selectedAirport=null;
+    airportMatches.style.display='none';
+    airportStatus.textContent='Airport database loads when you start typing.';
+    set('actualReport','');
+    set('actualFinish','');
+    set('precedingRest','12');
+    set('sectors','2');
+    set('longSectorTime','00:00');
+    set('additionalPilot',false,'change');
+    set('reliefRest','4');
+    set('splitStart','14:00');
+    set('splitEnd','19:00');
+
+    set('useDelayedReport',false,'change');
+    set('useStandby',false,'change');
+    set('useInterruptedRest',false,'change');
+    set('delayedOriginal','09:00');
+    set('delayedActual','09:00');
+    set('delayUndisturbed',false,'change');
+    set('standbyStart','06:00');
+    set('standbyCallout','11:00');
+    set('disturbanceTime','03:00');
+    set('leaveRestTime','06:00');
+
+    ['d7','d14','d28','d365','f28','f365','consecDuty','daysOff28','daysOff84'].forEach(id=>set(id,'0'));
+    set('daysOffYear','96');
+    set('lrCount','0');
+    set('lrHours','0');
+
+    document.querySelectorAll('details[open]').forEach(d=>d.removeAttribute('open'));
+    document.querySelector('[data-tab="fdp"]')?.click();
+
+    renderFDP();
+    renderRest();
+    renderPicDiscretion();
+    renderCumulative();
+    renderLongRange();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  document.getElementById('resetBtn')?.addEventListener('click',resetCalculator);
+
+  document.getElementById('calculateBtn')?.addEventListener('click',()=>{
+    renderFDP();
+    document.getElementById('fdp-result')?.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+
+  // ---------- Initial render ----------
+  renderFDP();
+  renderRest();
+  renderPicDiscretion();
+  renderCumulative();
+  renderLongRange();
+})();
+</script>
+</body>
+</html>
