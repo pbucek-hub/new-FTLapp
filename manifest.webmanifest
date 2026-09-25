@@ -1,7 +1,7 @@
 {
-  "name": "Flight Duty Pro",
-  "short_name": "Duty Pro",
-  "description": "Flight Duty Pro — JCC FTL calculator for NCC and CAT/AOC operations.",
+  "name": "FTL Calculator",
+  "short_name": "FTL",
+  "description": "JCC Flight Time Limitations calculator for NCC and CAT/AOC operations.",
   "id": "/new-FTLapp/beta.html",
   "start_url": "/new-FTLapp/beta.html",
   "scope": "/new-FTLapp/",
@@ -14,12 +14,6 @@
   "theme_color": "#06101d",
   "orientation": "portrait-primary",
   "icons": [
-    {
-      "src": "/new-FTLapp/pwa/flight-duty-pro.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
     {
       "src": "/new-FTLapp/pwa/icon-192.png",
       "sizes": "192x192",
