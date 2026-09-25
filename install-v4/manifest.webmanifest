@@ -1,0 +1,26 @@
+{
+  "name": "Flight Duty Pro",
+  "short_name": "Duty Pro",
+  "description": "JCC Flight Time Limitations calculator for NCC and CAT/AOC operations.",
+  "id": "/new-FTLapp/install-v4/",
+  "start_url": "/new-FTLapp/install-v4/",
+  "scope": "/new-FTLapp/install-v4/",
+  "display": "standalone",
+  "background_color": "#06101d",
+  "theme_color": "#06101d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/new-FTLapp/install-v4/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/new-FTLapp/install-v4/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
