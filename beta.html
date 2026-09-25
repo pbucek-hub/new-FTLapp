@@ -5,6 +5,13 @@
   <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
   <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">
 <meta charset="UTF-8">
+<meta name="theme-color" content="#06101d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FTL Calculator">
+<link rel="manifest" href="/new-FTLapp/manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="/new-FTLapp/pwa/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FTL Calculator — JCC NCC & CAT/AOC</title>
 <style>
@@ -433,71 +440,43 @@
   }
   .report-datetime{
     display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:10px;
-    align-items:end;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:8px;
+    align-items:stretch;
     width:100%;
     max-width:100%;
+    overflow:hidden;
     box-sizing:border-box;
-    overflow:hidden;
   }
-  .datetime-cell{
-    display:grid;
-    grid-template-columns:minmax(0,1fr);
-    min-width:0;
-    width:100%;
-    max-width:100%;
-    overflow:hidden;
-  }
-  .datetime-cell label{
-    display:block;
-    font-size:10.5px;
-    letter-spacing:.07em;
-    text-transform:uppercase;
-    color:#91a8c0;
-    margin:0 0 6px;
-  }
+  .report-datetime>*{min-width:0;max-width:100%;}
   .report-datetime input{
-    display:block!important;
     min-width:0!important;
     max-width:100%!important;
-    width:100%!important;
-    height:44px!important;
-    min-height:44px!important;
-    padding:0 8px!important;
-    margin:0!important;
+    width:100%;
+    height:44px!important;min-height:44px!important;
+    padding:0 12px!important;
     border-radius:11px!important;
     background:rgba(7,18,30,.46)!important;
     border:1px solid rgba(142,190,239,.16)!important;
     color:#f4f8fd!important;
     -webkit-text-fill-color:#f4f8fd!important;
-    font-size:14px!important;
+    font-size:16px!important;
     font-weight:540;
-    line-height:44px!important;
-    box-sizing:border-box!important;
-    overflow:hidden!important;
-    -webkit-appearance:none!important;
-    appearance:none!important;
+    line-height:44px;
+    box-sizing:border-box;
   }
-  #startTime,#reportDate{
-    display:block!important;
-    width:100%!important;
+  #startTime{
+    text-align:center;
+    font-variant-numeric:tabular-nums;
+  }
+  #reportDate{
     min-width:0!important;
     max-width:100%!important;
-    inline-size:100%!important;
-    min-inline-size:0!important;
-    max-inline-size:100%!important;
-    font-variant-numeric:tabular-nums;
+    overflow:hidden;
     color-scheme:dark;
-    text-align:center;
-    box-sizing:border-box!important;
-  }
-  /* iPad/iPhone Safari can impose an intrinsic width on native date controls.
-     Force both controls to the exact grid-cell width so they remain symmetrical. */
-  #reportDate{
-    -webkit-appearance:none!important;
-    appearance:none!important;
-    overflow:hidden!important;
+    letter-spacing:0;
+    font-variant-numeric:tabular-nums;
+    padding-right:10px!important;
   }
   #startTime:focus,#reportDate:focus{
     border-color:rgba(78,157,241,.72)!important;
@@ -510,68 +489,25 @@
     opacity:1;
     min-height:44px;
   }
-  #reportDate::-webkit-calendar-picker-indicator,
-  #startTime::-webkit-calendar-picker-indicator{
-    width:18px;
-    height:18px;
+  #reportDate::-webkit-calendar-picker-indicator{
+    width:18px;height:18px;
     margin:0;
-    padding:4px;
+    padding:5px;
     border-radius:7px;
-    background-color:rgba(89,154,220,.08);
+    background-color:rgba(89,154,220,.10);
     filter:invert(92%) sepia(7%) saturate(602%) hue-rotate(174deg) brightness(107%);
-    opacity:.84;
+    opacity:.88;
+    cursor:pointer;
   }
-  .sector-long-row{
-    display:grid;
-    grid-template-columns:118px minmax(0,1fr);
-    gap:10px;
-    align-items:stretch;
-    margin-bottom:10px;
+  #startTime::-webkit-calendar-picker-indicator{
+    width:18px;height:18px;
+    padding:4px;
+    opacity:.76;
+    filter:invert(92%) sepia(7%) saturate(602%) hue-rotate(174deg) brightness(107%);
   }
-  .compact-control{
-    margin:0!important;
-    padding:10px 11px;
-    border:1px solid rgba(142,190,239,.14);
-    border-radius:12px;
-    background:rgba(14,31,49,.38);
-    min-width:0;
-  }
-  .compact-control>label{
-    margin-bottom:7px!important;
-  }
-  #sectors{
-    display:block;
-    width:100%;
-    max-width:96px;
-    height:38px;
-    min-height:38px;
-    border-radius:10px;
-    background:rgba(7,18,30,.46);
-    border:1px solid rgba(142,190,239,.16);
-    color:#f4f8fd;
-    font-size:16px;
-    font-weight:600;
-    text-align:center;
-    padding:0 28px 0 10px;
-    color-scheme:dark;
-  }
-  #seg-longsector{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:8px;
-    flex-wrap:nowrap;
-  }
-  #seg-longsector button{
-    min-width:0;
-    min-height:38px;
-    padding:7px 9px;
-  }
-  .sector-range{display:none;}
-  @media(max-width:380px){
-    .report-datetime{gap:7px;}
-    .report-datetime input{font-size:14px!important;padding-left:8px!important;padding-right:8px!important;}
-    .sector-long-row{grid-template-columns:110px minmax(0,1fr);gap:7px;}
-    .compact-control{padding:10px;}
+  @media(max-width:360px){
+    .report-datetime{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;}
+    .report-datetime input{font-size:15px!important;padding-left:9px!important;padding-right:9px!important;}
   }
   #seg-acclim button,#seg-ext button,#seg-relieftype button{
     min-height:39px;background:rgba(7,17,29,.28);border-color:rgba(137,183,231,.12);
@@ -705,27 +641,11 @@
       </div>
     </div>
 
-    <div class="field" id="field-precedingrest" style="display:none;">
-      <label for="precedingRest">Rest between duties</label>
-      <select id="precedingRest" aria-label="Rest between duties">
-        <option value="" selected disabled>Select rest window…</option>
-        <option value="low">≤18 hours</option>
-        <option value="mid">&gt;18–30 hours</option>
-        <option value="high">&gt;30 hours</option>
-      </select>
-      <div class="hint">Required when not acclimatised. This selects the applicable Table B rest row.</div>
-    </div>
-
     <div class="field" id="field-starttime">
+      <label>Local time of report / FDP start</label>
       <div class="report-datetime">
-        <div class="datetime-cell">
-          <label for="startTime">Report time (local)</label>
-          <input type="time" id="startTime" value="09:00" aria-label="Report time">
-        </div>
-        <div class="datetime-cell">
-          <label for="reportDate">Report date (local)</label>
-          <input type="date" id="reportDate" aria-label="Report date">
-        </div>
+        <input type="time" id="startTime" value="09:00" aria-label="Report time">
+        <input type="date" id="reportDate" aria-label="Report date">
       </div>
       <div class="hint">Used for the applicable start-time band.</div>
     </div>
@@ -738,26 +658,6 @@
           <div class="field"><label>Actual finish time</label><input type="time" id="actualFinish"></div>
         </div>
         <div class="hint">If both are entered, the app compares the actual FDP with the applicable maximum. Finish times earlier than report are treated as the following day.</div>
-        <div class="field" style="margin-top:14px;">
-          <label style="text-transform:none;letter-spacing:0;color:var(--text);"><input type="checkbox" id="usePreFdpDuty"> Positioning / Company task / simulator before flight report</label>
-          <div id="preFdpDutyFields" style="display:none;">
-            <div class="grid2">
-              <div class="field">
-                <label>Earlier duty type</label>
-                <select id="preFdpDutyType">
-                  <option value="positioning">Positioning</option>
-                  <option value="company">Company task</option>
-                  <option value="simulator">Simulator detail</option>
-                </select>
-              </div>
-              <div class="field"><label>Earlier duty/report start</label><input type="time" id="preFdpDutyStart"></div>
-            </div>
-            <label id="positioningSplitLabel" style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--text);">
-              <input type="checkbox" id="positioningSplitSector"> Positioning is followed by less than minimum rest and split duty is claimed — count positioning as a sector
-            </label>
-            <div class="hint" id="preFdpDutyResult">Positioning/company work/simulator before flying moves the FDP start to the earlier report time. Simulator time counts in full but is not a sector.</div>
-          </div>
-        </div>
       </div>
     </details>
 
@@ -768,27 +668,16 @@
       <div class="hint" id="airportStatus">Airport database loads when you start typing.</div>
     </div>
 
-    <div class="sector-long-row">
-      <div class="field compact-control">
-        <label id="lbl-sectors" for="sectors">Number of sectors</label>
-        <select id="sectors" aria-label="Number of sectors">
-          <option value="1">1</option>
-          <option value="2" selected>2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-        </select>
-        <div class="sector-range" id="hint-sectors">1–6</div>
-      </div>
+    <div class="field" id="field-precedingrest" style="display:none;">
+      <label>Length of preceding rest (hours)</label>
+      <input type="number" id="precedingRest" value="12" min="0" step="0.5">
+      <div class="hint">Table B row is "≤18h or ≥30h" vs "between 18h and 30h."</div>
+    </div>
 
-      <div class="field compact-control">
-        <label>Long sector?</label>
-        <div class="seg" id="seg-longsector">
-          <button type="button" data-val="no" class="active">No</button>
-          <button type="button" data-val="yes">Yes</button>
-        </div>
-      </div>
+    <div class="field">
+      <label id="lbl-sectors">Number of sectors planned</label>
+      <input type="number" id="sectors" value="2" min="1" max="12" step="1">
+      <div class="hint" id="hint-sectors">Table A caps at "8 or more."</div>
     </div>
 
     <details class="helper" id="cat-ops-helper" style="display:none;">
@@ -829,48 +718,16 @@
             <div class="hint" id="interruptedRestResult"></div>
           </div>
         </div>
-
-        <div class="field">
-          <label style="text-transform:none;letter-spacing:0;color:var(--text);"><input type="checkbox" id="useCatSequence"> Acclimatised early / late / night-duty sequence checks</label>
-          <div id="catSequenceFields" style="display:none;">
-            <div class="grid2">
-              <div class="field"><label>Consecutive duties touching 0100–0659 (incl. this duty)</label><input type="number" id="catCriticalConsecutive" value="1" min="1" max="10" step="1"></div>
-              <div class="field"><label>Such duties in 7 consecutive days (incl. this duty)</label><input type="number" id="catCritical7d" value="1" min="1" max="10" step="1"></div>
-            </div>
-            <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--text);margin-bottom:10px;">
-              <input type="checkbox" id="catRegularEarly"> Regular early-morning series (4–5 consecutive duties)
-            </label>
-            <div id="catRegularEarlyFields" class="grid2" style="display:none;">
-              <div class="field"><label>Rest before series (h)</label><input type="number" id="catEarlyPreRest" value="24" min="0" step="0.5"></div>
-              <div class="field"><label>Each duty duration (h)</label><input type="number" id="catEarlyDutyHours" value="9" min="0" step="0.25"></div>
-              <div class="field"><label>Rest after series (h)</label><input type="number" id="catEarlyPostRest" value="63" min="0" step="0.5"></div>
-            </div>
-            <div class="field">
-              <label>Consecutive night-duty series touching 0200–0459</label>
-              <select id="catNightSeries">
-                <option value="0">None</option>
-                <option value="2">2 consecutive nights</option>
-                <option value="3">3 consecutive nights</option>
-              </select>
-            </div>
-            <div id="catNightFields" style="display:none;">
-              <div class="field">
-                <label>Duty immediately before the night series finished</label>
-                <select id="catPrevFinishBand">
-                  <option value="by2100">By 21:00</option>
-                  <option value="2101to2359">21:01–23:59</option>
-                  <option value="after2359">After 23:59</option>
-                </select>
-              </div>
-              <label id="catNightWillingLabel" style="display:none;gap:8px;align-items:flex-start;font-size:13px;color:var(--text);">
-                <input type="checkbox" id="catNightWilling"> Crew member confirms willingness to continue the planned 3-night roster
-              </label>
-            </div>
-            <div class="hint" id="catSequenceResult"></div>
-          </div>
-        </div>
       </div>
     </details>
+
+    <div class="field">
+      <label>Long sector?</label>
+      <div class="seg" id="seg-longsector">
+        <button data-val="no" class="active">No</button>
+        <button data-val="yes">Yes</button>
+      </div>
+    </div>
 
     <details class="helper" id="longrange-helper" style="display:none;">
       <summary id="longrange-summary">Long-sector adjustment — OMA 7.5.9</summary>
@@ -882,10 +739,7 @@
           <div class="hint" id="longSectorHint">NCC long-sector penalty begins at 09:01.</div>
         </div>
         <div id="longsector-result"></div>
-        <label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--text);margin-top:10px;">
-          <input type="checkbox" id="additionalPilot"> Additional current type-rated pilot carried
-        </label>
-        <div class="note">When confirmed, the long-sector modified-sector limits do not apply; use the actual sectors planned under the applicable FDP table.</div>
+        <div class="note">If an additional, current, type-rated pilot is carried, the long-sector modified-sector limits do not apply; use the actual sectors planned under the applicable FDP table.</div>
       </div>
     </details>
 
@@ -923,9 +777,9 @@
       </div>
       <div class="field">
         <label style="text-transform:none;letter-spacing:0;color:var(--text);">
-          <input type="checkbox" id="reliefPilotQualified"> Relief pilot qualification equal/superior confirmed
+          <input type="checkbox" id="additionalPilot"> Additional current type-rated pilot carried
         </label>
-        <div class="hint">Required before any in-flight-rest FDP credit is applied. A jump seat provides no in-flight-rest credit.</div>
+        <div class="hint">When confirmed, the long-sector modified-sector penalty is removed and the actual sectors planned are used. Jump seat gives no in-flight-rest credit.</div>
       </div>
       <div class="field" id="reliefRestField" style="display:none;">
         <label>Total qualifying in-flight rest (need not be consecutive)</label>
@@ -954,21 +808,6 @@
       <label>Length of the preceding duty period (hours)</label>
       <input type="number" id="precedingDuty" value="10" min="0" step="0.5">
     </div>
-
-    <details class="helper" id="cat-rest-context" style="display:none;">
-      <summary>CAT/AOC previous standby / contactable period</summary>
-      <div class="inner">
-        <div class="field">
-          <label>Activity immediately before this rest</label>
-          <select id="catPriorActivity">
-            <option value="duty">Duty / FDP (normal rest calculation)</option>
-            <option value="standbyNoCall">Standby ended — no callout</option>
-            <option value="contactable">Contactable period ended</option>
-          </select>
-          <div class="hint" id="catPriorActivityHint">After standby with no callout: at least 12h rest. After a contactable period: at least 10h before the next duty.</div>
-        </div>
-      </div>
-    </details>
 
     <div class="field">
       <label>Away from base?</label>
@@ -1204,7 +1043,7 @@
   ];
   const TABLE_B = [
     {label:'Preceding rest ≤18h or >30h', vals:[15,14.25,13.5,12.75,12,11.25,11]},
-    {label:'Preceding rest >18h–30h',      vals:[13.5,13,12.5,11.75,11,11,11]},
+    {label:'Preceding rest 18h–30h',       vals:[13.5,13,12.5,11.75,11,11,11]},
   ];
   const CAT_TABLE_A = [
     {label:'0600–0659', test:m=>m>=360&&m<=419, vals:[13,12.25,11.5,10.75,10,9.5,9,9]},
@@ -1215,7 +1054,7 @@
   ];
   const CAT_TABLE_B = [
     {label:'Preceding rest ≤18h or >30h', vals:[13,12.25,11.5,10.75,10,9.25,9]},
-    {label:'Preceding rest >18h–30h',      vals:[11.5,11,10.5,9.75,9,9,9]},
+    {label:'Preceding rest 18h–30h',       vals:[11.5,11,10.5,9.75,9,9,9]},
   ];
 
   let ruleSet = 'NCC';
@@ -1229,7 +1068,6 @@
     document.getElementById('cat-ops-helper').style.display = v==='CAT' ? '' : 'none';
     document.getElementById('tab-longrange').style.display = v==='NCC' ? '' : 'none';
     document.getElementById('catAnnualOffField').style.display = v==='CAT' ? '' : 'none';
-    document.getElementById('cat-rest-context').style.display = v==='CAT' ? '' : 'none';
     if(v==='CAT' && document.getElementById('panel-longrange').classList.contains('active')){
       document.querySelector('[data-tab="fdp"]').click();
     }
@@ -1244,7 +1082,9 @@
   seg('seg-acclim', v=>{
     acclimState = v;
     document.getElementById('field-precedingrest').style.display = v==='acclim' ? 'none' : '';
-    document.getElementById('hint-sectors').textContent = '1–6';
+    document.getElementById('hint-sectors').textContent = v==='acclim'
+      ? 'Table A caps at "8 or more."'
+      : 'Table B caps at "7 or more."';
     renderFDP();
   });
 
@@ -1255,11 +1095,8 @@
     if(!longSectorEnabled){
       document.getElementById('longSectorTime').value='00:00';
       document.getElementById('longrange-helper').removeAttribute('open');
-    } else {
-      document.getElementById('longrange-helper').setAttribute('open','');
-      if(document.getElementById('longSectorTime').value==='00:00'){
-        document.getElementById('longSectorTime').value=ruleSet==='NCC'?'09:01':'07:01';
-      }
+    } else if(document.getElementById('longSectorTime').value==='00:00'){
+      document.getElementById('longSectorTime').value=ruleSet==='NCC'?'09:01':'07:01';
     }
     renderFDP();
   });
@@ -1275,37 +1112,10 @@
   let reliefType = 'jump';
   seg('seg-relieftype', v=>{ reliefType=v; document.getElementById('reliefRestField').style.display=v==='jump'?'none':''; renderFDP(); });
 
-  ['startTime','reportDate','precedingRest','sectors','splitStart','splitEnd','reliefRest','longSectorTime','actualReport','actualFinish',
-    'preFdpDutyStart','catCriticalConsecutive','catCritical7d','catEarlyPreRest','catEarlyDutyHours','catEarlyPostRest'].forEach(id=>{
+  ['startTime','reportDate','precedingRest','sectors','splitStart','splitEnd','reliefRest','longSectorTime','actualReport','actualFinish'].forEach(id=>{
     document.getElementById(id).addEventListener('input', renderFDP);
   });
   document.getElementById('additionalPilot').addEventListener('change',renderFDP);
-  document.getElementById('reliefPilotQualified').addEventListener('change',renderFDP);
-  document.getElementById('usePreFdpDuty').addEventListener('change',()=>{
-    document.getElementById('preFdpDutyFields').style.display=document.getElementById('usePreFdpDuty').checked?'':'none';
-    renderFDP();
-  });
-  document.getElementById('preFdpDutyType').addEventListener('change',()=>{
-    document.getElementById('positioningSplitLabel').style.display=document.getElementById('preFdpDutyType').value==='positioning'?'flex':'none';
-    renderFDP();
-  });
-  document.getElementById('positioningSplitSector').addEventListener('change',renderFDP);
-  document.getElementById('useCatSequence').addEventListener('change',()=>{
-    document.getElementById('catSequenceFields').style.display=document.getElementById('useCatSequence').checked?'':'none';
-    renderFDP();
-  });
-  document.getElementById('catRegularEarly').addEventListener('change',()=>{
-    document.getElementById('catRegularEarlyFields').style.display=document.getElementById('catRegularEarly').checked?'grid':'none';
-    renderFDP();
-  });
-  document.getElementById('catNightSeries').addEventListener('change',()=>{
-    const active=document.getElementById('catNightSeries').value!=='0';
-    document.getElementById('catNightFields').style.display=active?'':'none';
-    document.getElementById('catNightWillingLabel').style.display=document.getElementById('catNightSeries').value==='3'?'flex':'none';
-    renderFDP();
-  });
-  document.getElementById('catPrevFinishBand').addEventListener('change',renderFDP);
-  document.getElementById('catNightWilling').addEventListener('change',renderFDP);
   ['useDelayedReport','useStandby','useInterruptedRest'].forEach(id=>{
     document.getElementById(id).addEventListener('change',()=>{
       document.getElementById('delayedReportFields').style.display=document.getElementById('useDelayedReport').checked?'':'none';
@@ -1341,15 +1151,14 @@
       const idx=Math.min(Math.max(sectors,1),8)-1;
       return {hours:band.vals[idx],line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table A · '+band.label};
     }
-    const restBand=document.getElementById('precedingRest').value;
-    if(!restBand){
-      return {hours:null,needsRest:true,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · rest window required'};
+    const rest=parseFloat(document.getElementById('precedingRest').value||'0');
+    if(Math.abs(rest-30)<1e-9){
+      return {hours:null,review:true,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · exactly 30h preceding rest requires review'};
     }
     const table=ruleSet==='NCC'?TABLE_B:CAT_TABLE_B;
-    const row=(restBand==='mid')?table[1]:table[0];
+    const row=(rest<=18||rest>30)?table[0]:table[1];
     const idx=Math.min(Math.max(sectors,1),7)-1;
-    const restLabel=restBand==='low'?'≤18h':(restBand==='mid'?'>18–30h':'>30h');
-    return {hours:row.vals[idx],review:false,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · '+restLabel+' · '+row.label};
+    return {hours:row.vals[idx],review:false,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · '+row.label};
   }
 
   function longSectorHours(){
@@ -1375,87 +1184,6 @@
       else { return {notApplicable:true, sectors:actual, text:'>11:00 is not applicable for a two-pilot non-acclimatised CAT/AOC crew.'}; }
     }
     return {notApplicable:false,sectors:mod,text};
-  }
-
-  function preFdpAdjustment(actualSectors, normalReport){
-    const notes=[];
-    if(!document.getElementById('usePreFdpDuty').checked){
-      document.getElementById('preFdpDutyResult').textContent='Positioning/company work/simulator before flying moves the FDP start to the earlier report time. Simulator time counts in full but is not a sector.';
-      return {reportTime:normalReport,sectors:actualSectors,notes,missing:false};
-    }
-    const type=document.getElementById('preFdpDutyType').value;
-    const start=document.getElementById('preFdpDutyStart').value;
-    if(!start){
-      document.getElementById('preFdpDutyResult').textContent='Enter the earlier duty/report start time.';
-      return {reportTime:normalReport,sectors:actualSectors,notes,missing:true};
-    }
-    let sectors=actualSectors;
-    if(type==='positioning' && document.getElementById('positioningSplitSector').checked){
-      sectors+=1;
-      notes.push('Positioning counted as a sector because less than minimum rest follows and split duty is claimed.');
-    } else if(type==='positioning'){
-      notes.push('Positioning is duty and starts the FDP; it does not count as a sector.');
-    } else if(type==='simulator'){
-      notes.push('Simulator time counts in full toward the FDP; simulator flying is not a sector.');
-    } else {
-      notes.push('Company-required task before flight report forms part of the subsequent FDP.');
-    }
-    document.getElementById('preFdpDutyResult').textContent=notes.join(' ');
-    return {reportTime:start,sectors,notes,missing:false};
-  }
-
-  function dutyTouchesCriticalWindow(startTime,endTime){
-    if(!startTime) return false;
-    const s=timeToMinutes(startTime);
-    if(s>=60 && s<=419) return true;
-    if(!endTime) return false;
-    let e=timeToMinutes(endTime);
-    if(e<s)e+=1440;
-    for(let t=s;t<=e;t+=15){
-      const m=t%1440;
-      if(m>=60 && m<=419)return true;
-    }
-    return false;
-  }
-
-  function catSequenceAssessment(){
-    const notes=[];
-    if(ruleSet!=='CAT' || !document.getElementById('useCatSequence').checked){
-      document.getElementById('catSequenceResult').textContent='';
-      return {illegal:false,review:false,notes};
-    }
-    if(acclimState!=='acclim'){
-      document.getElementById('catSequenceResult').textContent='These additional early/late/night sequence limits apply to acclimatised crew only.';
-      return {illegal:false,review:false,notes:['CAT additional sequence limits not applied: crew is not acclimatised.']};
-    }
-    let illegal=false, review=false;
-    const consecutive=parseInt(document.getElementById('catCriticalConsecutive').value||'0',10);
-    const in7=parseInt(document.getElementById('catCritical7d').value||'0',10);
-    if(consecutive>3){illegal=true;notes.push('More than 3 consecutive duties touch 0100–0659.');}
-    if(in7>4){illegal=true;notes.push('More than 4 duties touch 0100–0659 in 7 consecutive days.');}
-
-    if(document.getElementById('catRegularEarly').checked){
-      const pre=parseFloat(document.getElementById('catEarlyPreRest').value||'0');
-      const duty=parseFloat(document.getElementById('catEarlyDutyHours').value||'0');
-      const post=parseFloat(document.getElementById('catEarlyPostRest').value||'0');
-      if(pre<24){illegal=true;notes.push('Regular early series requires at least 24h rest before the series.');}
-      if(duty>9){illegal=true;notes.push('Regular early-series duty may not exceed 9h.');}
-      if(post<63){illegal=true;notes.push('Regular early series requires at least 63h free of duty after the series.');}
-    }
-
-    const nights=parseInt(document.getElementById('catNightSeries').value||'0',10);
-    const prev=document.getElementById('catPrevFinishBand').value;
-    if(nights===3){
-      if(prev==='after2359'){illegal=true;notes.push('A planned 3-night sequence is not permitted when the preceding duty finishes after 23:59; only the first night may be undertaken.');}
-      else if(prev==='2101to2359' && !document.getElementById('catNightWilling').checked){
-        illegal=true;notes.push('For a 3-night sequence after a preceding-duty finish of 21:01–23:59, crew willingness to continue must be confirmed; otherwise only the first two nights may be undertaken.');
-      }
-    } else if(nights===2 && prev==='after2359'){
-      illegal=true;notes.push('A planned 2-night sequence is not permitted when the preceding duty finishes after 23:59; only the first night may be undertaken.');
-    }
-    const msg=notes.length?notes.join(' '):'Sequence inputs satisfy the selected CAT/AOC limits.';
-    document.getElementById('catSequenceResult').textContent=msg;
-    return {illegal,review,notes};
   }
 
   function catOperationalAdjustment(lookupSectors, normalReport){
@@ -1532,35 +1260,13 @@
   }
 
   function renderFDP(){
-    if(acclimState==='notacclim' && !document.getElementById('precedingRest').value){
-      const box=document.getElementById('fdp-result');
-      box.classList.remove('illegal');
-      box.innerHTML='<div class="headline"><div class="num">SELECT REST</div><div class="lbl">Not acclimatised: select the preceding-rest band (≤18h, >18–30h, or >30h) before calculating maximum FDP.</div></div>';
-      return;
-    }
     const sectorsInput = parseInt(document.getElementById('sectors').value||'1',10);
-    const flightReport=document.getElementById('actualReport').value || document.getElementById('startTime').value;
-    const preAdj=preFdpAdjustment(sectorsInput,flightReport);
-    if(preAdj.missing){
-      const box=document.getElementById('fdp-result');
-      box.classList.remove('illegal');
-      box.innerHTML='<div class="headline"><div class="num">ENTER START</div><div class="lbl">Enter the earlier positioning / Company-task / simulator report time before calculating.</div></div>';
-      return;
-    }
-    const longInfo = modifiedSectorCount(preAdj.sectors);
+    const longInfo = modifiedSectorCount(sectorsInput);
     const lookupSectors = longInfo.sectors;
-    document.getElementById('longsector-result').innerHTML = '<div class="note">'+longInfo.text+(lookupSectors!==preAdj.sectors && !longInfo.notApplicable ? '<br><strong>Table lookup sectors: '+lookupSectors+'</strong>' : '')+'</div>';
+    document.getElementById('longsector-result').innerHTML = '<div class="note">'+longInfo.text+(lookupSectors!==sectorsInput && !longInfo.notApplicable ? '<br><strong>Table lookup sectors: '+lookupSectors+'</strong>' : '')+'</div>';
 
-    const nominalReport=preAdj.reportTime;
-    if(ruleSet==='CAT' && acclimState==='acclim' && !document.getElementById('useCatSequence').checked &&
-       dutyTouchesCriticalWindow(nominalReport,document.getElementById('actualFinish').value)){
-      const box=document.getElementById('fdp-result');
-      box.classList.remove('illegal');
-      box.innerHTML='<div class="headline"><div class="num">SEQUENCE CHECK</div><div class="lbl">This acclimatised CAT/AOC duty touches 0100–0659. Open CAT/AOC operational adjustments and complete the early/late/night sequence check before relying on the result.</div></div>';
-      return;
-    }
+    const nominalReport=document.getElementById('actualReport').value || document.getElementById('startTime').value;
     const catAdj=catOperationalAdjustment(lookupSectors,nominalReport);
-    const seqAdj=catSequenceAssessment();
     const effectiveReport=catAdj.reportForTable;
     const tl=tableLimitFor(effectiveReport,lookupSectors);
     if(tl.review){
@@ -1574,21 +1280,19 @@
     let tableLine=tl.line+' · '+capLabel+' sector(s)';
 
 
-    let ext = 0, extLine = '', capNote = '', splitLine = '', extReview=false;
+    let ext = 0, extLine = '', capNote = '', splitLine = '';
     if(extMethod==='split'){
       const sMin = timeToMinutes(document.getElementById('splitStart').value);
       const eMin = timeToMinutes(document.getElementById('splitEnd').value);
       let gapMin = eMin - sMin;
       if(gapMin < 0) gapMin += 1440;
-      const exclusionMin=ruleSet==='NCC'?20:30;
-      const qualifyingMin=Math.max(0,gapMin-exclusionMin);
-      const r=qualifyingMin/60;
-      splitLine='Raw split gap '+hhmm(gapMin/60)+'; qualifying rest '+hhmm(r)+' after the mandatory '+exclusionMin+' min immediate post/pre-flight exclusion.';
-      if(r<3){ ext=0; extLine='Qualifying split rest <3h → no extension'; }
-      else if(r<=10){ ext=r/2; extLine='Split duty · '+hhmm(r)+' qualifying rest → +'+hhmm(ext); }
-      else { ext=0; extReview=true; extLine='Qualifying split rest exceeds 10h, outside the published 3–10h extension table.'; }
+      const r = gapMin/60;
+      splitLine = 'Gap between start and end of split: '+hhmm(r)+' rest';
+      if(r<3){ ext=0; extLine='Split duty rest <3h → no extension'; }
+      else if(r<=10){ ext=r/2; extLine='Split duty · '+hhmm(r)+' rest → +'+hhmm(ext); }
+      else { ext=5; extLine='Split duty rest >10h is outside the 3–10h table — treat as the 10h max (+5:00) or confirm with ops.'; }
     } else if(extMethod==='relief'){
-      const pilotOK=document.getElementById('reliefPilotQualified').checked;
+      const pilotOK=document.getElementById('additionalPilot').checked;
       const r = parseFloat(document.getElementById('reliefRest').value||'0');
       if(!pilotOK){ ext=0; extLine='Additional current type-rated pilot not confirmed — no relief credit applied'; }
       else if(reliefType==='jump'){ ext=0; extLine='Jump seat — sector penalty removed; no in-flight-rest FDP credit'; }
@@ -1601,25 +1305,14 @@
       document.getElementById('fdp-result').innerHTML='<div class="headline"><div class="num" style="color:var(--red)">NOT APPLICABLE</div><div class="lbl">CAT/AOC TWO-PILOT NON-ACCLIMATISED LONG-SECTOR LIMIT</div></div><div class="note warn">'+longInfo.text+'</div>';
       return;
     }
-    if(extReview){
-      document.getElementById('fdp-result').classList.remove('illegal');
-      document.getElementById('fdp-result').innerHTML='<div class="headline"><div class="num">REVIEW REQUIRED</div><div class="lbl">'+extLine+'</div></div>';
-      return;
-    }
-    if(catAdj.illegal || seqAdj.illegal){
-      const reasons=[...catAdj.notes,...seqAdj.notes];
+    if(catAdj.illegal){
       document.getElementById('fdp-result').classList.add('illegal');
-      document.getElementById('fdp-result').innerHTML='<div class="headline"><div class="num">NOT LEGAL</div><div class="lbl">'+reasons.join(' ')+'</div></div>';
-      return;
-    }
-    if(seqAdj.review){
-      document.getElementById('fdp-result').classList.remove('illegal');
-      document.getElementById('fdp-result').innerHTML='<div class="headline"><div class="num">REVIEW REQUIRED</div><div class="lbl">'+seqAdj.notes.join(' ')+'</div></div>';
+      document.getElementById('fdp-result').innerHTML='<div class="headline"><div class="num">NOT LEGAL</div><div class="lbl">'+catAdj.notes.join(' ')+'</div></div>';
       return;
     }
     let total = tableHours + ext;
     let capped = false;
-    if(extMethod==='relief' && reliefType!=='jump' && document.getElementById('reliefPilotQualified').checked){
+    if(extMethod==='relief' && reliefType!=='jump' && document.getElementById('additionalPilot').checked){
       const cap = reliefType==='bunk' ? (ruleSet==='NCC'?20:18) : (ruleSet==='NCC'?18:15);
       if(total>cap){ total=cap; capped=true; }
     }
@@ -1640,18 +1333,13 @@
 
     const actualReport=document.getElementById('actualReport').value;
     const actualFinish=document.getElementById('actualFinish').value;
-    const actualFdpStart=document.getElementById('usePreFdpDuty').checked ? document.getElementById('preFdpDutyStart').value : actualReport;
     let actualFDP=null;
-    if(actualFdpStart && actualFinish){
-      let d=timeToMinutes(actualFinish)-timeToMinutes(actualFdpStart);
+    if(actualReport && actualFinish){
+      let d=timeToMinutes(actualFinish)-timeToMinutes(actualReport);
       if(d<0)d+=1440;
       actualFDP=d/60;
     }
-    let preDutyExtra=0;
-    if(document.getElementById('usePreFdpDuty').checked && document.getElementById('preFdpDutyStart').value){
-      preDutyExtra=minutesDiff(document.getElementById('preFdpDutyStart').value,flightReport)/60;
-    }
-    const minimumKnownFDP=longSectorHours()>0 ? preDutyExtra+longSectorHours()+1 : 0;
+    const minimumKnownFDP=longSectorHours()>0 ? longSectorHours()+1 : 0;
     const intrinsicIllegal=minimumKnownFDP>total+1e-9;
     const actualIllegal=actualFDP!==null && actualFDP>total+1e-9;
     const illegal=intrinsicIllegal||actualIllegal;
@@ -1673,9 +1361,7 @@
       (selectedAirport ? '<div class="row"><span class="k">Report location</span><span class="v">'+selectedAirport.icao+' / '+(selectedAirport.iata||'—')+' · '+selectedAirport.tz+'</span></div>' : '')+
       (selectedAirport && utcReportLabel ? '<div class="row"><span class="k">Report time UTC</span><span class="v">'+utcReportLabel+'</span></div>' : '')+
       (selectedAirport && utcEndLabel ? '<div class="row"><span class="k">Latest FDP end UTC</span><span class="v">'+utcEndLabel+'</span></div>' : '')+
-      (preAdj.notes.length ? '<div class="row"><span class="k">'+preAdj.notes.join(' · ')+'</span><span class="v"></span></div>' : '')+
       (catAdj.notes.length ? '<div class="row"><span class="k">'+catAdj.notes.join(' · ')+'</span><span class="v"></span></div>' : '')+
-      (seqAdj.notes.length ? '<div class="row"><span class="k">'+seqAdj.notes.join(' · ')+'</span><span class="v"></span></div>' : '')+
       (extMethod!=='none' ? '<div class="row"><span class="k">'+extLine+'</span><span class="v"></span></div>' : '')+
       (extMethod==='split' ? '<div class="row"><span class="k">'+splitLine+'</span><span class="v"></span></div>' : '');
     compactResultDetails(box);
@@ -1803,26 +1489,10 @@
   seg('seg-accom', v=>{ accomProvided = v==='yes'; renderRest(); });
   seg('seg-over20', v=>{ over20 = v==='yes'; renderRest(); });
   ['precedingDuty','travelMin'].forEach(id=> document.getElementById(id).addEventListener('input', renderRest));
-  document.getElementById('catPriorActivity').addEventListener('change',renderRest);
 
   function renderRest(){
     const duty = parseFloat(document.getElementById('precedingDuty').value||'0');
     const REST_BASE = ruleSet==='NCC'?10:12;
-    const catPrior = ruleSet==='CAT' ? document.getElementById('catPriorActivity').value : 'duty';
-
-    if(ruleSet==='CAT' && catPrior!=='duty'){
-      const special = catPrior==='standbyNoCall' ? 12 : 10;
-      const label = catPrior==='standbyNoCall'
-        ? 'Standby ended without callout — minimum 12h rest before next duty.'
-        : 'Contactable period ended — minimum 10h before next duty.';
-      const box=document.getElementById('rest-result');
-      box.innerHTML=
-        '<div class="headline"><div class="num">'+hhmm(special)+'</div><div class="lbl">MINIMUM REST / ELAPSED TIME REQUIRED</div></div>'+
-        '<div class="row"><span class="k">'+label+'</span><span class="v">'+hhmm(special)+'</span></div>';
-      compactResultDetails(box);
-      return;
-    }
-
     let base = Math.max(duty,REST_BASE);
     let reduced = base;
     const ACCOM_FLOOR = ruleSet==='NCC'?8:10;
@@ -1879,8 +1549,8 @@
 
   function statusFor(used, limit){
     const pct = used/limit;
-    if(used>limit) return 'bad';
-    if(used===limit || pct>=0.9) return 'warn';
+    if(used>=limit) return 'bad';
+    if(pct>=0.9) return 'warn';
     return 'ok';
   }
 
@@ -1895,7 +1565,7 @@
     function line(label, used, limit, unit){
       const st = statusFor(used, limit);
       const remaining = Math.max(limit-used,0);
-      const msg = used>limit ? 'Limit exceeded' : (used===limit ? 'Limit reached' : (remaining.toFixed(1).replace(/\.0$/,'')+unit+' remaining'));
+      const msg = st==='bad' ? 'Limit reached/exceeded' : (remaining.toFixed(1).replace(/\.0$/,'')+unit+' remaining');
       return '<div class="row"><span class="k">'+label+'</span><span class="v"><span class="status '+st+'">'+msg+'</span></span></div>';
     }
 
@@ -1975,15 +1645,10 @@
     airportStatus.textContent='Airport database loads when you start typing.';
     set('actualReport','');
     set('actualFinish','');
-    set('usePreFdpDuty',false,'change');
-    set('preFdpDutyType','positioning','change');
-    set('preFdpDutyStart','');
-    set('positioningSplitSector',false,'change');
-    set('precedingRest','');
+    set('precedingRest','12');
     set('sectors','2');
     set('longSectorTime','00:00');
     set('additionalPilot',false,'change');
-    set('reliefPilotQualified',false,'change');
     set('reliefRest','4');
     set('splitStart','14:00');
     set('splitEnd','19:00');
@@ -1991,16 +1656,6 @@
     set('useDelayedReport',false,'change');
     set('useStandby',false,'change');
     set('useInterruptedRest',false,'change');
-    set('useCatSequence',false,'change');
-    set('catCriticalConsecutive','1');
-    set('catCritical7d','1');
-    set('catRegularEarly',false,'change');
-    set('catEarlyPreRest','24');
-    set('catEarlyDutyHours','9');
-    set('catEarlyPostRest','63');
-    set('catNightSeries','0','change');
-    set('catPrevFinishBand','by2100','change');
-    set('catNightWilling',false,'change');
     set('delayedOriginal','09:00');
     set('delayedActual','09:00');
     set('delayUndisturbed',false,'change');
@@ -2010,7 +1665,6 @@
     set('leaveRestTime','06:00');
 
     ['d7','d14','d28','d365','f28','f365','consecDuty','daysOff28','daysOff84'].forEach(id=>set(id,'0'));
-    set('catPriorActivity','duty','change');
     set('daysOffYear','96');
     set('lrCount','0');
     set('lrHours','0');
@@ -2040,6 +1694,14 @@
   renderCumulative();
   renderLongRange();
 })();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/new-FTLapp/pwa-sw.js', {scope:'/new-FTLapp/'})
+      .catch(function () { /* web version remains fully functional */ });
+  });
+}
 </script>
 </body>
 </html>
