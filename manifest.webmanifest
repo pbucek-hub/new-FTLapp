@@ -1,0 +1,30 @@
+{
+  "name": "FTL Calculator",
+  "short_name": "FTL",
+  "description": "JCC Flight Time Limitations calculator for NCC and CAT/AOC operations.",
+  "id": "/new-FTLapp/beta.html",
+  "start_url": "/new-FTLapp/beta.html",
+  "scope": "/new-FTLapp/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#06101d",
+  "theme_color": "#06101d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/new-FTLapp/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/new-FTLapp/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
