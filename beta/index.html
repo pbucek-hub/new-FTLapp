@@ -5,6 +5,13 @@
   <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
   <meta name="bingbot" content="noindex, nofollow, noarchive, nosnippet">
 <meta charset="UTF-8">
+<meta name="theme-color" content="#06101d">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FTL Calculator">
+<link rel="manifest" href="/new-FTLapp/manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="/new-FTLapp/pwa/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FTL Calculator — JCC NCC & CAT/AOC</title>
 <style>
@@ -433,71 +440,43 @@
   }
   .report-datetime{
     display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:10px;
-    align-items:end;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:8px;
+    align-items:stretch;
     width:100%;
     max-width:100%;
+    overflow:hidden;
     box-sizing:border-box;
-    overflow:hidden;
   }
-  .datetime-cell{
-    display:grid;
-    grid-template-columns:minmax(0,1fr);
-    min-width:0;
-    width:100%;
-    max-width:100%;
-    overflow:hidden;
-  }
-  .datetime-cell label{
-    display:block;
-    font-size:10.5px;
-    letter-spacing:.07em;
-    text-transform:uppercase;
-    color:#91a8c0;
-    margin:0 0 6px;
-  }
+  .report-datetime>*{min-width:0;max-width:100%;}
   .report-datetime input{
-    display:block!important;
     min-width:0!important;
     max-width:100%!important;
-    width:100%!important;
-    height:44px!important;
-    min-height:44px!important;
-    padding:0 8px!important;
-    margin:0!important;
+    width:100%;
+    height:44px!important;min-height:44px!important;
+    padding:0 12px!important;
     border-radius:11px!important;
     background:rgba(7,18,30,.46)!important;
     border:1px solid rgba(142,190,239,.16)!important;
     color:#f4f8fd!important;
     -webkit-text-fill-color:#f4f8fd!important;
-    font-size:14px!important;
+    font-size:16px!important;
     font-weight:540;
-    line-height:44px!important;
-    box-sizing:border-box!important;
-    overflow:hidden!important;
-    -webkit-appearance:none!important;
-    appearance:none!important;
+    line-height:44px;
+    box-sizing:border-box;
   }
-  #startTime,#reportDate{
-    display:block!important;
-    width:100%!important;
+  #startTime{
+    text-align:center;
+    font-variant-numeric:tabular-nums;
+  }
+  #reportDate{
     min-width:0!important;
     max-width:100%!important;
-    inline-size:100%!important;
-    min-inline-size:0!important;
-    max-inline-size:100%!important;
-    font-variant-numeric:tabular-nums;
+    overflow:hidden;
     color-scheme:dark;
-    text-align:center;
-    box-sizing:border-box!important;
-  }
-  /* iPad/iPhone Safari can impose an intrinsic width on native date controls.
-     Force both controls to the exact grid-cell width so they remain symmetrical. */
-  #reportDate{
-    -webkit-appearance:none!important;
-    appearance:none!important;
-    overflow:hidden!important;
+    letter-spacing:0;
+    font-variant-numeric:tabular-nums;
+    padding-right:10px!important;
   }
   #startTime:focus,#reportDate:focus{
     border-color:rgba(78,157,241,.72)!important;
@@ -510,68 +489,25 @@
     opacity:1;
     min-height:44px;
   }
-  #reportDate::-webkit-calendar-picker-indicator,
-  #startTime::-webkit-calendar-picker-indicator{
-    width:18px;
-    height:18px;
+  #reportDate::-webkit-calendar-picker-indicator{
+    width:18px;height:18px;
     margin:0;
-    padding:4px;
+    padding:5px;
     border-radius:7px;
-    background-color:rgba(89,154,220,.08);
+    background-color:rgba(89,154,220,.10);
     filter:invert(92%) sepia(7%) saturate(602%) hue-rotate(174deg) brightness(107%);
-    opacity:.84;
+    opacity:.88;
+    cursor:pointer;
   }
-  .sector-long-row{
-    display:grid;
-    grid-template-columns:118px minmax(0,1fr);
-    gap:10px;
-    align-items:stretch;
-    margin-bottom:10px;
+  #startTime::-webkit-calendar-picker-indicator{
+    width:18px;height:18px;
+    padding:4px;
+    opacity:.76;
+    filter:invert(92%) sepia(7%) saturate(602%) hue-rotate(174deg) brightness(107%);
   }
-  .compact-control{
-    margin:0!important;
-    padding:10px 11px;
-    border:1px solid rgba(142,190,239,.14);
-    border-radius:12px;
-    background:rgba(14,31,49,.38);
-    min-width:0;
-  }
-  .compact-control>label{
-    margin-bottom:7px!important;
-  }
-  #sectors{
-    display:block;
-    width:100%;
-    max-width:96px;
-    height:38px;
-    min-height:38px;
-    border-radius:10px;
-    background:rgba(7,18,30,.46);
-    border:1px solid rgba(142,190,239,.16);
-    color:#f4f8fd;
-    font-size:16px;
-    font-weight:600;
-    text-align:center;
-    padding:0 28px 0 10px;
-    color-scheme:dark;
-  }
-  #seg-longsector{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:8px;
-    flex-wrap:nowrap;
-  }
-  #seg-longsector button{
-    min-width:0;
-    min-height:38px;
-    padding:7px 9px;
-  }
-  .sector-range{display:none;}
-  @media(max-width:380px){
-    .report-datetime{gap:7px;}
-    .report-datetime input{font-size:14px!important;padding-left:8px!important;padding-right:8px!important;}
-    .sector-long-row{grid-template-columns:110px minmax(0,1fr);gap:7px;}
-    .compact-control{padding:10px;}
+  @media(max-width:360px){
+    .report-datetime{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;}
+    .report-datetime input{font-size:15px!important;padding-left:9px!important;padding-right:9px!important;}
   }
   #seg-acclim button,#seg-ext button,#seg-relieftype button{
     min-height:39px;background:rgba(7,17,29,.28);border-color:rgba(137,183,231,.12);
@@ -705,27 +641,11 @@
       </div>
     </div>
 
-    <div class="field" id="field-precedingrest" style="display:none;">
-      <label for="precedingRest">Rest between duties</label>
-      <select id="precedingRest" aria-label="Rest between duties">
-        <option value="" selected disabled>Select rest window…</option>
-        <option value="low">0–18 hours</option>
-        <option value="mid">18–30 hours</option>
-        <option value="high">More than 30 hours</option>
-      </select>
-      <div class="hint">Required when not acclimatised. This selects the applicable Table B rest row.</div>
-    </div>
-
     <div class="field" id="field-starttime">
+      <label>Local time of report / FDP start</label>
       <div class="report-datetime">
-        <div class="datetime-cell">
-          <label for="startTime">Report time (local)</label>
-          <input type="time" id="startTime" value="09:00" aria-label="Report time">
-        </div>
-        <div class="datetime-cell">
-          <label for="reportDate">Report date (local)</label>
-          <input type="date" id="reportDate" aria-label="Report date">
-        </div>
+        <input type="time" id="startTime" value="09:00" aria-label="Report time">
+        <input type="date" id="reportDate" aria-label="Report date">
       </div>
       <div class="hint">Used for the applicable start-time band.</div>
     </div>
@@ -748,27 +668,16 @@
       <div class="hint" id="airportStatus">Airport database loads when you start typing.</div>
     </div>
 
-    <div class="sector-long-row">
-      <div class="field compact-control">
-        <label id="lbl-sectors" for="sectors">Number of sectors</label>
-        <select id="sectors" aria-label="Number of sectors">
-          <option value="1">1</option>
-          <option value="2" selected>2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-        </select>
-        <div class="sector-range" id="hint-sectors">1–6</div>
-      </div>
+    <div class="field" id="field-precedingrest" style="display:none;">
+      <label>Length of preceding rest (hours)</label>
+      <input type="number" id="precedingRest" value="12" min="0" step="0.5">
+      <div class="hint">Table B row is "≤18h or ≥30h" vs "between 18h and 30h."</div>
+    </div>
 
-      <div class="field compact-control">
-        <label>Long sector?</label>
-        <div class="seg" id="seg-longsector">
-          <button type="button" data-val="no" class="active">No</button>
-          <button type="button" data-val="yes">Yes</button>
-        </div>
-      </div>
+    <div class="field">
+      <label id="lbl-sectors">Number of sectors planned</label>
+      <input type="number" id="sectors" value="2" min="1" max="12" step="1">
+      <div class="hint" id="hint-sectors">Table A caps at "8 or more."</div>
     </div>
 
     <details class="helper" id="cat-ops-helper" style="display:none;">
@@ -811,6 +720,14 @@
         </div>
       </div>
     </details>
+
+    <div class="field">
+      <label>Long sector?</label>
+      <div class="seg" id="seg-longsector">
+        <button data-val="no" class="active">No</button>
+        <button data-val="yes">Yes</button>
+      </div>
+    </div>
 
     <details class="helper" id="longrange-helper" style="display:none;">
       <summary id="longrange-summary">Long-sector adjustment — OMA 7.5.9</summary>
@@ -1165,7 +1082,9 @@
   seg('seg-acclim', v=>{
     acclimState = v;
     document.getElementById('field-precedingrest').style.display = v==='acclim' ? 'none' : '';
-    document.getElementById('hint-sectors').textContent = '1–6';
+    document.getElementById('hint-sectors').textContent = v==='acclim'
+      ? 'Table A caps at "8 or more."'
+      : 'Table B caps at "7 or more."';
     renderFDP();
   });
 
@@ -1176,11 +1095,8 @@
     if(!longSectorEnabled){
       document.getElementById('longSectorTime').value='00:00';
       document.getElementById('longrange-helper').removeAttribute('open');
-    } else {
-      document.getElementById('longrange-helper').setAttribute('open','');
-      if(document.getElementById('longSectorTime').value==='00:00'){
-        document.getElementById('longSectorTime').value=ruleSet==='NCC'?'09:01':'07:01';
-      }
+    } else if(document.getElementById('longSectorTime').value==='00:00'){
+      document.getElementById('longSectorTime').value=ruleSet==='NCC'?'09:01':'07:01';
     }
     renderFDP();
   });
@@ -1235,15 +1151,14 @@
       const idx=Math.min(Math.max(sectors,1),8)-1;
       return {hours:band.vals[idx],line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table A · '+band.label};
     }
-    const restBand=document.getElementById('precedingRest').value;
-    if(!restBand){
-      return {hours:null,needsRest:true,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · rest window required'};
+    const rest=parseFloat(document.getElementById('precedingRest').value||'0');
+    if(Math.abs(rest-30)<1e-9){
+      return {hours:null,review:true,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · exactly 30h preceding rest requires review'};
     }
     const table=ruleSet==='NCC'?TABLE_B:CAT_TABLE_B;
-    const row=(restBand==='mid')?table[1]:table[0];
+    const row=(rest<=18||rest>30)?table[0]:table[1];
     const idx=Math.min(Math.max(sectors,1),7)-1;
-    const restLabel=restBand==='low'?'0–18h':(restBand==='mid'?'18–30h':'>30h');
-    return {hours:row.vals[idx],review:false,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · '+restLabel+' · '+row.label};
+    return {hours:row.vals[idx],review:false,line:(ruleSet==='NCC'?'NCC ':'CAT/AOC ')+'Table B · '+row.label};
   }
 
   function longSectorHours(){
@@ -1345,12 +1260,6 @@
   }
 
   function renderFDP(){
-    if(acclimState==='notacclim' && !document.getElementById('precedingRest').value){
-      const box=document.getElementById('fdp-result');
-      box.classList.remove('illegal');
-      box.innerHTML='<div class="headline"><div class="num">SELECT REST</div><div class="lbl">Not acclimatised: select the rest period between duties (0–18h, 18–30h, or more than 30h) before calculating maximum FDP.</div></div>';
-      return;
-    }
     const sectorsInput = parseInt(document.getElementById('sectors').value||'1',10);
     const longInfo = modifiedSectorCount(sectorsInput);
     const lookupSectors = longInfo.sectors;
@@ -1736,7 +1645,7 @@
     airportStatus.textContent='Airport database loads when you start typing.';
     set('actualReport','');
     set('actualFinish','');
-    set('precedingRest','');
+    set('precedingRest','12');
     set('sectors','2');
     set('longSectorTime','00:00');
     set('additionalPilot',false,'change');
@@ -1785,6 +1694,14 @@
   renderCumulative();
   renderLongRange();
 })();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('/new-FTLapp/pwa-sw.js', {scope:'/new-FTLapp/'})
+      .catch(function () { /* web version remains fully functional */ });
+  });
+}
 </script>
 </body>
 </html>
